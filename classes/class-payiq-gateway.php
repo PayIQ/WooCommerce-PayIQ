@@ -4,134 +4,133 @@
  */
 class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
-    protected $alternative_icon;
-    protected $alternative_icon_width;
-    protected $language;
-    protected $payment_method;
-    protected $auto_capture;
-    protected $service_name;
-    protected $shared_secret;
-    protected $testmode;
-    protected $debug;
+	protected $alternative_icon;
+	protected $alternative_icon_width;
+	protected $language;
+	protected $payment_method;
+	protected $auto_capture;
+	protected $service_name;
+	protected $shared_secret;
+	protected $testmode;
+	protected $debug;
 
-    protected $api_client = null;
+	protected $api_client = null;
 
-    public function __construct()
-    {
-        //parent::__construct();
+	public function __construct() {
 
-        $this->id = 'payiq';
-        $this->icon = '';
-        $this->has_fields = false;
-        $this->method_title = __( "PayIQ", 'woocommerce-gateway-payiq' );
-        $this->method_description = __( "PayIQ", 'woocommerce-gateway-payiq' );
+		//parent::__construct();
 
-        // Load the form fields for options page.
-        $this->init_form_fields();
+		$this->id = 'payiq';
+		$this->icon = '';
+		$this->has_fields = false;
+		$this->method_title = __( 'PayIQ', 'woocommerce-gateway-payiq' );
+		$this->method_description = __( 'PayIQ', 'woocommerce-gateway-payiq' );
 
-        // Load the settings using WooCommerce Settings API.
-        $this->init_settings();
+		// Load the form fields for options page.
+		$this->init_form_fields();
 
-        // Define option variables
-        $this->title                    = ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-        $this->description              = ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
+		// Load the settings using WooCommerce Settings API.
+		$this->init_settings();
 
-        $this->alternative_icon         = ( isset( $this->settings['alternative_icon'] ) ) ? $this->settings['alternative_icon'] : '';
-        $this->alternative_icon_width   = ( isset( $this->settings['alternative_icon_width'] ) ) ? $this->settings['alternative_icon_width'] : '';
-        $this->language                 = ( isset( $this->settings['language'] ) ) ? $this->settings['language'] : 'sv';
-        $this->payment_method           = ( isset( $this->settings['payment_method'] ) ) ? $this->settings['payment_method'] : 'notset';
-        $this->auto_capture             = ( isset( $this->settings['auto_capture'] ) ) ? $this->settings['auto_capture'] : '';
+		// Define option variables
+		$this->title                    = ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
+		$this->description              = ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
 
-        $this->service_name             = ( isset( $this->settings['service_name'] ) ) ? $this->settings['service_name'] : '';
-        $this->shared_secret            = ( isset( $this->settings['shared_secret'] ) ) ? $this->settings['shared_secret'] : '';
+		$this->alternative_icon         = ( isset( $this->settings['alternative_icon'] ) ) ? $this->settings['alternative_icon'] : '';
+		$this->alternative_icon_width   = ( isset( $this->settings['alternative_icon_width'] ) ) ? $this->settings['alternative_icon_width'] : '';
+		$this->language                 = ( isset( $this->settings['language'] ) ) ? $this->settings['language'] : 'sv';
+		$this->payment_method           = ( isset( $this->settings['payment_method'] ) ) ? $this->settings['payment_method'] : 'notset';
+		$this->auto_capture             = ( isset( $this->settings['auto_capture'] ) ) ? $this->settings['auto_capture'] : '';
 
-        $this->testmode                 = ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
-        $this->debug                    = ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : 'no';
+		$this->service_name             = ( isset( $this->settings['service_name'] ) ) ? $this->settings['service_name'] : '';
+		$this->shared_secret            = ( isset( $this->settings['shared_secret'] ) ) ? $this->settings['shared_secret'] : '';
 
-        // Reqister hook for saving admin options
-        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+		$this->testmode                 = ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
+		$this->debug                    = ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : 'no';
+
+		// Reqister hook for saving admin options
+		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] );
+
+		if ( class_exists( 'WC_Logger' ) ) {
+			$this->logger = new WC_Logger();
+		} else {
+			$this->debug = false;
+		}
+	}
 
 
-        if( class_exists( 'WC_Logger' ) ) {
-            $this->logger = new WC_Logger();
-        } else {
-            $this->debug = false;
-        }
-    }
+	/**
+	 * @param  $order WooCommerce order object or ID
+	 * @return PayIQAPI PayIQ API wrapper
+	 */
+	function get_api_client( $order = null ) {
 
+		if ( is_numeric( $order ) && intval( $order ) > 0 ) {
+			$order = wc_get_order( $order );
+		}
 
-    /**
-     * @param  $order WooCommerce order object or ID
-     * @return PayIQAPI PayIQ API wrapper
-     */
-    function get_api_client( $order = null ) {
+		if ( $order ) {
 
-        if( is_numeric($order) && intval($order) > 0) {
-            $order = wc_get_order( $order );
-        }
+		}
 
-        if( $order ) {
+		require_once WC_PAYIQ_PLUGIN_DIR . 'classes/class-soapclient.php';
+		require_once WC_PAYIQ_PLUGIN_DIR . 'classes/class-payiq-api.php';
 
-        }
+		$this->api_client = new PayIQAPI( $this->service_name, $this->shared_secret, $order, $this->debug );
 
-        require_once WC_PAYIQ_PLUGIN_DIR . 'classes/class-soapclient.php';
-        require_once WC_PAYIQ_PLUGIN_DIR . 'classes/class-payiq-api.php';
+		return $this->api_client;
+	}
 
-        $this->api_client = new PayIQAPI( $this->service_name, $this->shared_secret, $order, $this->debug );
+	/**
+	 * Define option fields (WooCommerce Settings API)
+	 */
+	function init_form_fields() {
 
-        return $this->api_client;
-    }
-
-    /**
-     * Define option fields (WooCommerce Settings API)
-     */
-    function init_form_fields()
-    {
-        $this->form_fields = array(
-            'enabled' => array(
-                'title'         => __( 'Enable/Disable', 'woocommerce-gateway-payiq' ),
-                'type'          => 'checkbox',
-                'label'         => __( 'Enable PayIQ payment gateway', 'woocommerce-gateway-payiq' ),
-                'default'       => 'yes'
-            ),
-            'title' => array(
-                'title'         => __( 'Title', 'woocommerce-gateway-payiq' ),
-                'type'          => 'text',
-                'description'   => __( 'This is the title of the payment option that the user sees during checkout, in emails and order history.', 'woocommerce-gateway-payiq' ),
-                'default'       => __( "PayIQ", 'woocommerce-gateway-payiq' ),
-                'desc_tip'      => true,
-            ),
-            'description' => array(
-                'title'         => __( 'Description', 'woocommerce-gateway-payiq' ),
-                'type'          => 'textarea',
-                'description'   => __( 'This is the description of the payment option that the user sees during checkout.', 'woocommerce-gateway-payiq' ),
-                'default'       => __( "Pay via PayIQ using credit card or bank transfer.", 'woocommerce-gateway-payiq' )
-            ),
-            'alternative_icon'         => array(
-                'title'       => __( 'Alternative payment icon', 'woocommerce-gateway-payiq' ),
-                'type'        => 'text',
-                'description' => sprintf( __( 'Add the URL to an alternative payment icon that the user sees during checkout. Leave blank to use the default image. Alternative payment method logos can be found <a href="%s" target="_blank">here</a>.', 'woocommerce-gateway-payiq' ), 'https://secure.payiq.se/customer/Support/Logos' ),
-                'default'     => ''
-            ),
-            'alternative_icon_width'   => array(
-                'title'       => __( 'Icon width', 'woocommerce-gateway-payiq' ),
-                'type'        => 'text',
-                'description' => __( 'The width of the Alternative payment icon.', 'woocommerce-gateway-payiq' ),
-                'default'     => ''
-            ),
-            'language' => array(
-                'title'         => __( 'Language', 'woocommerce-gateway-payiq' ),
-                'type'          => 'select',
-                'options'       => array(
-                    'en'            => __( 'English', 'woocommerce-gateway-payiq' ),
-                    'fi'            => __( 'Finnish', 'woocommerce-gateway-payiq' ),
-                    'no'            => __( 'Norwegian', 'woocommerce-gateway-payiq' ),
-                    'sv'            => __( 'Swedish', 'woocommerce-gateway-payiq' ),
-                ),
-                'description' => __( 'Set the language in which the page will be opened when the customer is redirected to DIBS.', 'woocommerce-gateway-payiq' ),
-                'default'     => 'sv'
-            ),
-            /*
+		$this->form_fields = [
+			'enabled' => [
+				'title'         => __( 'Enable/Disable', 'woocommerce-gateway-payiq' ),
+				'type'          => 'checkbox',
+				'label'         => __( 'Enable PayIQ payment gateway', 'woocommerce-gateway-payiq' ),
+				'default'       => 'yes'
+			],
+			'title' => [
+				'title'         => __( 'Title', 'woocommerce-gateway-payiq' ),
+				'type'          => 'text',
+				'description'   => __( 'This is the title of the payment option that the user sees during checkout, in emails and order history.', 'woocommerce-gateway-payiq' ),
+				'default'       => __( 'PayIQ', 'woocommerce-gateway-payiq' ),
+				'desc_tip'      => true,
+			],
+			'description' => [
+				'title'         => __( 'Description', 'woocommerce-gateway-payiq' ),
+				'type'          => 'textarea',
+				'description'   => __( 'This is the description of the payment option that the user sees during checkout.', 'woocommerce-gateway-payiq' ),
+				'default'       => __( 'Pay via PayIQ using credit card or bank transfer.', 'woocommerce-gateway-payiq' )
+			],
+			'alternative_icon'         => [
+				'title'       => __( 'Alternative payment icon', 'woocommerce-gateway-payiq' ),
+				'type'        => 'text',
+				'description' => sprintf( __( 'Add the URL to an alternative payment icon that the user sees during checkout. Leave blank to use the default image. Alternative payment method logos can be found <a href="%s" target="_blank">here</a>.', 'woocommerce-gateway-payiq' ), 'https://secure.payiq.se/customer/Support/Logos' ),
+				'default'     => ''
+			],
+			'alternative_icon_width'   => [
+				'title'       => __( 'Icon width', 'woocommerce-gateway-payiq' ),
+				'type'        => 'text',
+				'description' => __( 'The width of the Alternative payment icon.', 'woocommerce-gateway-payiq' ),
+				'default'     => ''
+			],
+			'language' => [
+				'title'         => __( 'Language', 'woocommerce-gateway-payiq' ),
+				'type'          => 'select',
+				'options'       => [
+					'en'            => __( 'English', 'woocommerce-gateway-payiq' ),
+					'fi'            => __( 'Finnish', 'woocommerce-gateway-payiq' ),
+					'no'            => __( 'Norwegian', 'woocommerce-gateway-payiq' ),
+					'sv'            => __( 'Swedish', 'woocommerce-gateway-payiq' ),
+				],
+				'description' => __( 'Set the language in which the page will be opened when the customer is redirected to DIBS.', 'woocommerce-gateway-payiq' ),
+				'default'     => 'sv'
+			],
+			/*
             'payment_method' => array(
                 'title'         => __( 'Payment Method', 'woocommerce-gateway-payiq' ),
                 'type'          => 'select',
@@ -144,36 +143,36 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
                 'default'       => 'no'
             ),
             */
-            'auto_capture' => array(
-                'title'         => __( 'Transaction capture', 'woocommerce-gateway-payiq' ),
-                'type'          => 'select',
-                'options'       => array(
-                    'yes'           => __( 'On Purchase', 'woocommerce-gateway-payiq' ),
-                    'complete'      => __( 'On order completion', 'woocommerce-gateway-payiq' ),
-                    'no'            => __( 'No', 'woocommerce-gateway-payiq' )
-                ),
-                'description'   => __( '"On purchase" means that the money in transferred from the customers account immediately. With "On order completion" the money is transferred when the order is marked as completed. With "No" the transfer needs to be triggered manually from the PayIQ admin.', 'woocommerce-gateway-payiq' ),
-                'default'       => 'no'
-            ),
-            'service_name' => array(
-                'title'         => __( 'Service name', 'woocommerce-gateway-payiq' ),
-                'type'          => 'text',
-                'description'   => __( 'Unique id of your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
-                'default'       => ''
-            ),
-            'shared_secret' => array(
-                'title'         => __( 'Shared secret', 'woocommerce-gateway-payiq' ),
-                'type'          => 'text',
-                'description'   => __( 'Unique key for your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
-                'default'       => ''
-            ),
-            'proxy_ips' => array(
-                'title'         => __( 'Proxy IP-addresses', 'woocommerce-gateway-payiq' ),
-                'type'          => 'text',
-                'description'   => __( 'If you are using a proxy such as Varnish or Nginx(as a proxy), we need to validate the client IPs for security reasons. Enter all proxy IPs here separated by comma.', 'woocommerce-gateway-payiq' ),
-                'default'       => ''
-            ),
-            /*
+			'auto_capture' => [
+				'title'         => __( 'Transaction capture', 'woocommerce-gateway-payiq' ),
+				'type'          => 'select',
+				'options'       => [
+					'yes'           => __( 'On Purchase', 'woocommerce-gateway-payiq' ),
+					'complete'      => __( 'On order completion', 'woocommerce-gateway-payiq' ),
+					'no'            => __( 'No', 'woocommerce-gateway-payiq' )
+				],
+				'description'   => __( '"On purchase" means that the money in transferred from the customers account immediately. With "On order completion" the money is transferred when the order is marked as completed. With "No" the transfer needs to be triggered manually from the PayIQ admin.', 'woocommerce-gateway-payiq' ),
+				'default'       => 'no'
+			],
+			'service_name' => [
+				'title'         => __( 'Service name', 'woocommerce-gateway-payiq' ),
+				'type'          => 'text',
+				'description'   => __( 'Unique id of your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
+				'default'       => ''
+			],
+			'shared_secret' => [
+				'title'         => __( 'Shared secret', 'woocommerce-gateway-payiq' ),
+				'type'          => 'text',
+				'description'   => __( 'Unique key for your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
+				'default'       => ''
+			],
+			'proxy_ips' => [
+				'title'         => __( 'Proxy IP-addresses', 'woocommerce-gateway-payiq' ),
+				'type'          => 'text',
+				'description'   => __( 'If you are using a proxy such as Varnish or Nginx(as a proxy), we need to validate the client IPs for security reasons. Enter all proxy IPs here separated by comma.', 'woocommerce-gateway-payiq' ),
+				'default'       => ''
+			],
+			/*
             'testmode'                 => array(
                 'title'   => __( 'Test Mode', 'woocommerce-gateway-payiq' ),
                 'type'    => 'checkbox',
@@ -181,168 +180,166 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
                 'default' => 'yes'
             ),
             */
-            'debug'                    => array(
-                'title'   => __( 'Debug', 'woocommerce-gateway-dibs' ),
-                'type'    => 'checkbox',
-                'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'woocommerce-gateway-dibs' ),
-                'default' => 'no'
-            )
+			'debug'                    => [
+				'title'   => __( 'Debug', 'woocommerce-gateway-dibs' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'woocommerce-gateway-dibs' ),
+				'default' => 'no'
+			]
+
+		];
+
+	}
+
+	/**
+	 * Debug mode?
+	 * @return bool
+	 */
+	function is_debug() {
+		return ( $this->debug == 'yes' ? true : false );
+	}
 
 
-        );
+	/**
+	 * Gets icon for display in payment method selector in checkout
+	 *
+	 * @return string
+	 */
+	public function get_icon() {
+		$icon_html  = '';
+		$icon_src   = '';
+		$icon_width = '';
+		if ( $this->alternative_icon ) {
+			$icon_src   = $this->alternative_icon;
+			$icon_width = $this->alternative_icon_width;
+		} else {
+			$icon_src   = WC_PAYIQ_PLUGIN_URL.'/assets/logo_small.png';
+			$icon_width = '145';
+		}
+		$icon_html = '<img src="' . $icon_src . '" alt="PayIQ" style="max-width:' . $icon_width . 'px"/>';
 
-    }
-
-    /**
-     * Debug mode?
-     * @return bool
-     */
-    function is_debug() {
-        return ( $this->debug == 'yes' ? true : false );
-    }
-
-
-    /**
-     * Gets icon for display in payment method selector in checkout
-     *
-     * @return string
-     */
-    public function get_icon() {
-        $icon_html  = '';
-        $icon_src   = '';
-        $icon_width = '';
-        if ( $this->alternative_icon ) {
-            $icon_src   = $this->alternative_icon;
-            $icon_width = $this->alternative_icon_width;
-        } else {
-            $icon_src   = WC_PAYIQ_PLUGIN_URL.'/assets/logo_small.png';
-            $icon_width = '145';
-        }
-        $icon_html = '<img src="' . $icon_src . '" alt="PayIQ" style="max-width:' . $icon_width . 'px"/>';
-
-        return apply_filters( 'wc_dibs_icon_html', $icon_html );
-    }
+		return apply_filters( 'wc_dibs_icon_html', $icon_html );
+	}
 
 
 
-    /**
-     * There are no payment fields for PayIQ, but we want to show the description if set.
-     **/
-    function payment_fields() {
-        $description = $this->get_description();
+	/**
+	 * There are no payment fields for PayIQ, but we want to show the description if set.
+	 **/
+	function payment_fields() {
+		$description = $this->get_description();
 
-        if ( !empty( $description ) ) {
-            echo wpautop( wptexturize( $description ) );
-        }
-    }
+		if ( ! empty( $description ) ) {
+			echo wpautop( wptexturize( $description ) );
+		}
+	}
 
-    /**
-     * Process checkout
-     * @param int $order_id
-     * @return array
-     */
-    function process_payment( $order_id )
-    {
-        $order = wc_get_order( $order_id );
+	/**
+	 * Process checkout
+	 * @param int $order_id
+	 * @return array
+	 */
+	function process_payment( $order_id ) {
 
-        // Mark as on-hold (we're awaiting the cheque)
-        $order->update_status('on-hold', __( 'Awaiting PayIQ payment', 'woocommerce-gateway-payiq' ));
+		$order = wc_get_order( $order_id );
 
-        // Reduce stock levels
-        $order->reduce_order_stock();
+		// Mark as on-hold (we're awaiting the cheque)
+		$order->update_status( 'on-hold', __( 'Awaiting PayIQ payment', 'woocommerce-gateway-payiq' ) );
 
-        // Remove cart
-        WC()->cart->empty_cart();
+		// Reduce stock levels
+		$order->reduce_order_stock();
 
-        $redirect_url = $this->get_payment_window_url( $order );
+		// Remove cart
+		WC()->cart->empty_cart();
 
-        $this->set_default_order_meta( $order );
+		$redirect_url = $this->get_payment_window_url( $order );
 
-        if( !empty( $redirect_url ) && strpos( 'secure.payiq.se', $redirect_url ) !== false ) {
+		$this->set_default_order_meta( $order );
 
-            return array(
-                'result' => 'fail',
-                'redirect' => $redirect_url
-            );
-        }
+		if ( ! empty( $redirect_url ) && strpos( 'secure.payiq.se', $redirect_url ) !== false ) {
 
-        // Return redirect to payment window
-        return array(
-            'result' => 'success',
-            'redirect' => $redirect_url
-        );
-    }
+			return [
+				'result' => 'fail',
+				'redirect' => $redirect_url
+			];
+		}
 
-    function set_default_order_meta( $order ) {
+		// Return redirect to payment window
+		return [
+			'result' => 'success',
+			'redirect' => $redirect_url
+		];
+	}
 
-        $meta_fields = array(
-            '_payiq_order_reference'            => '',
-            '_payiq_transaction_id'             => '',
-            '_payiq_order_payment_method'       => '',
-            '_payiq_order_payment_directbank'   => '',
-            '_payiq_order_authorized'           => 'No',
-            '_payiq_order_captured'             => 'No',
-        );
+	function set_default_order_meta( $order ) {
 
-        foreach( $meta_fields as $meta_key => $meta_value ) {
-            update_post_meta( $order->id, $meta_key, $meta_value );
-        }
-    }
+		$meta_fields = [
+			'_payiq_order_reference'            => '',
+			'_payiq_transaction_id'             => '',
+			'_payiq_order_payment_method'       => '',
+			'_payiq_order_payment_directbank'   => '',
+			'_payiq_order_authorized'           => 'No',
+			'_payiq_order_captured'             => 'No',
+		];
 
-    /**
-     * Send a PrepareSession to PayIQ API to initialize a payment and get the link to payment window
-     * @param $order
-     * @return bool|string
-     */
-    function get_payment_window_url( $order ) {
+		foreach ( $meta_fields as $meta_key => $meta_value ) {
+			update_post_meta( $order->id, $meta_key, $meta_value );
+		}
+	}
 
-        $api = $this->get_api_client();
+	/**
+	 * Send a PrepareSession to PayIQ API to initialize a payment and get the link to payment window
+	 * @param $order
+	 * @return bool|string
+	 */
+	function get_payment_window_url( $order ) {
 
-        $api->setOrder( $order );
+		$api = $this->get_api_client();
 
-        $prepare_session_data = array(
-            'auto_capture' => $this->auto_capture,
-        );
+		$api->setOrder( $order );
 
-        $redirect_url = $api->prepareSession( $prepare_session_data );
+		$prepare_session_data = [
+			'auto_capture' => $this->auto_capture,
+		];
 
-        return $redirect_url;
-    }
+		$redirect_url = $api->prepareSession( $prepare_session_data );
 
-    /**
-     * Capture money for an open transaction. Should only be called when auto_capture = false
-     * @param $order
-     * @param $transaction_id
-     * @return bool
-     */
-    function capture_transaction($order, $transaction_id ) {
+		return $redirect_url;
+	}
 
-        $api = $this->get_api_client();
+	/**
+	 * Capture money for an open transaction. Should only be called when auto_capture = false
+	 * @param $order
+	 * @param $transaction_id
+	 * @return bool
+	 */
+	function capture_transaction( $order, $transaction_id ) {
 
-        $api->setOrder( $order );
+		$api = $this->get_api_client();
 
-        update_post_meta( $order->id, 'payiq_transaction_id', $_GET['transactionid'] );
+		$api->setOrder( $order );
 
-        if(preg_match('/[^a-z_\-0-9]/i', $transaction_id))
-        {
-            if( $this->debug ) {
-                $this->logger->add( 'payiq', 'Invalid transaction id: '.$transaction_id );
-            }
-            return false;
-        }
+		update_post_meta( $order->id, 'payiq_transaction_id', $_GET['transactionid'] );
 
-        $client_ip = $this->get_client_ip();
+		if (preg_match( '/[^a-z_\-0-9]/i', $transaction_id ) ) {
+			if ( $this->debug ) {
+				$this->logger->add( 'payiq', 'Invalid transaction id: '.$transaction_id );
+			}
+			return false;
+		}
 
-        if( !$client_ip ) {
-            if( $this->debug ) {
-                $this->logger->add( 'payiq', 'Invalid IP: '.$client_ip.' (If you use a proxy you should add the IP to the allowed proxies field)' );
-            }
-            return false;
-        }
+		$client_ip = $this->get_client_ip();
 
-        $data = $api->CaptureTransaction( $transaction_id, $client_ip );
+		if ( ! $client_ip ) {
+			if ( $this->debug ) {
+				$this->logger->add( 'payiq', 'Invalid IP: '.$client_ip.' (If you use a proxy you should add the IP to the allowed proxies field)' );
+			}
+			return false;
+		}
 
-        /*
+		$data = $api->CaptureTransaction( $transaction_id, $client_ip );
+
+		/*
          * Example response:
         Array
         (
@@ -353,263 +350,253 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
         )
         */
 
-        if( $data['Succeeded'] == 'false' ) {
+		if ( $data['Succeeded'] == 'false' ) {
 
-            if( $this->is_debug() ) {
-                $this->logger->add( 'payiq', 'Capture transaction failed for order #'.$order->id.'. Reason: '. $data['ErrorCode'] );
-            }
-            $order->add_order_note( __('PayIQ callback failed. Error code: '.$data['ErrorCode'], 'woocommerce-gateway-payiq') );
-        }
-        if( $data['ErrorCode'] == 'TransactionCannotBeManaged' ) {
+			if ( $this->is_debug() ) {
+				$this->logger->add( 'payiq', 'Capture transaction failed for order #'.$order->id.'. Reason: '. $data['ErrorCode'] );
+			}
+			$order->add_order_note( __( 'PayIQ callback failed. Error code: '.$data['ErrorCode'], 'woocommerce-gateway-payiq' ) );
+		}
+		if ( $data['ErrorCode'] == 'TransactionCannotBeManaged' ) {
 
-            if( $this->is_debug() ) {
-                $this->logger->add( 'payiq', 'Transaction alread captured for order #'.$order->id.'.' );
-            }
-        }
-        elseif( $data['SettledAmount'] != ($this->order->get_total() * 100) ) {
+			if ( $this->is_debug() ) {
+				$this->logger->add( 'payiq', 'Transaction alread captured for order #'.$order->id.'.' );
+			}
+		}
+		elseif ( $data['SettledAmount'] != ($this->order->get_total() * 100) ) {
 
-            if( $this->is_debug() ) {
-                $this->logger->add( 'payiq', 'SettledAmount does not match order total for #'.$order->id.'.' );
-            }
-        }
-        else { //Everything seams to be ok
+			if ( $this->is_debug() ) {
+				$this->logger->add( 'payiq', 'SettledAmount does not match order total for #'.$order->id.'.' );
+			}
+		}
+		else { //Everything seams to be ok
 
-            if( $this->is_debug() ) {
-                $this->logger->add( 'payiq', 'Transaction captured for order #'.$order->id.'.' );
-            }
+			if ( $this->is_debug() ) {
+				$this->logger->add( 'payiq', 'Transaction captured for order #'.$order->id.'.' );
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        // TODO: Handle error
+		// TODO: Handle error
 
-        return false;
+		return false;
 
-    }
+	}
 
-    function cancel_order( $order, $post_data ) {
+	function cancel_order( $order, $post_data ) {
 
+		if ( $order->status == 'pending' ) {
 
-        if ( $order->status == 'pending' ) {
+			// Cancel order and restore stock
+			$order->cancel_order( __( 'Order cancelled by customer.', 'woocommerce-gateway-payiq' ) );
 
-            // Cancel order and restore stock
-            $order->cancel_order( __( 'Order cancelled by customer.', 'woocommerce-gateway-payiq' ) );
+			// Show notice for customer
+			wc_add_notice( __( 'Your order was cancelled.', 'woocommerce-gateway-payiq' ), 'error' );
 
-            // Show notice for customer
-            wc_add_notice( __( 'Your order was cancelled.', 'woocommerce-gateway-payiq' ), 'error' );
+		} elseif ( $order->status != 'pending' ) {
 
-        } elseif ( $order->status != 'pending' ) {
+			wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'woocommerce-gateway-payiq' ), 'error' );
 
-            wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'woocommerce-gateway-payiq' ), 'error' );
+		} else {
 
-        } else {
+			wc_add_notice( __( 'Invalid order.', 'woocommerce-gateway-payiq' ), 'error' );
+		}
 
-            wc_add_notice( __( 'Invalid order.', 'woocommerce-gateway-payiq' ), 'error' );
-        }
+		wp_safe_redirect( wc_get_cart_url() );
+		exit;
+	}
 
-        wp_safe_redirect( wc_get_cart_url() );
-        exit;
-    }
+	public function validate_callback( $order, $post_data ) {
 
-    public function validate_callback($order, $post_data ) {
+		$required_fields = [
+			'servicename',
+			'transactionid',
+			'orderreference',
+			'authorizedamount',
+			'operationtype',
+			'currency',
+			'operationamount',
+			'settledamount',
+			'message',
+			'customername',
+			'paymentmethod',
+			'directbank',
+			'subscriptionid',
+			'checksum',
+		];
 
-        $required_fields = array (
-            'servicename',
-            'transactionid',
-            'orderreference',
-            'authorizedamount',
-            'operationtype',
-            'currency',
-            'operationamount',
-            'settledamount',
-            'message',
-            'customername',
-            'paymentmethod',
-            'directbank',
-            'subscriptionid',
-            'checksum',
-        );
+		foreach ( $required_fields as $required_field ) {
 
-        foreach( $required_fields as $required_field ) {
+			if ( ! isset( $_GET[$required_field] ) ) {
 
-            if( !isset( $_GET[$required_field] ) ) {
+				$this->logger->add( 'payiq', 'Missing fields: ' . print_r( array_diff( $required_fields, array_keys( $_GET ) ), true ) );
 
-                $this->logger->add( 'payiq', 'Missing fields: ' . print_r( array_diff( $required_fields, array_keys($_GET)), true ) );
+				return false;
+			}
+		}
 
-                return false;
-            }
-        }
+		$api = $this->get_api_client();
+		$api->setOrder( $order );
 
-        $api = $this->get_api_client();
-        $api->setOrder( $order );
+		$checksum_valid = $api->validateChecksum( $post_data, $post_data['checksum'] );
 
-        $checksum_valid = $api->validateChecksum( $post_data, $post_data['checksum'] );
+		if ( $checksum_valid !== true ) {
 
-        if( $checksum_valid  !== true ) {
+			if ( ! isset( $_GET[$required_field] ) ) {
 
-            if( !isset( $_GET[$required_field] ) ) {
+				$this->logger->add( 'payiq', 'Raw string: ' . $checksum_valid['raw_sting'] );
+				$this->logger->add( 'payiq', 'Checksums: Generated: ' . $checksum_valid['generated'] . '  - Sent: ' . $post_data['checksum'] );
 
-                $this->logger->add( 'payiq', 'Raw string: ' . $checksum_valid['raw_sting'] );
-                $this->logger->add( 'payiq', 'Checksums: Generated: ' . $checksum_valid['generated'] . '  - Sent: ' . $post_data['checksum']);
+				return false;
+			}
+		}
 
-                return false;
-            }
-        }
+		return true;
+	}
 
-        return true;
-    }
 
+	function process_callback( $order, $post_data ) {
 
-    function process_callback( $order, $post_data ) {
+		var_dump( $this->is_debug() );
+		if ( $this->is_debug() ) {
 
-        var_dump($this->is_debug());
-        if( $this->is_debug() ) {
+			$this->log->add( 'payiq', 'PayIQ callback URI: ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );
+			$this->log->add( 'payiq', 'PayIQ callback values: ' . print_r( $_GET, true ) );
+		}
 
-            $this->log->add( 'payiq', 'PayIQ callback URI: ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );
-            $this->log->add( 'payiq', 'PayIQ callback values: ' . print_r($_GET, true) );
-        }
+		if ( $this->validate_callback( $order, $post_data ) !== true ) {
 
+			status_header( 400, 'Bad Request' );
 
-        if( $this->validate_callback( $order, $post_data ) !== true ) {
+			return [
+				'status'    => 'error',
+				'msg'       => 'Bad Request'
+			];
+		}
 
-            status_header(400, 'Bad Request');
+		// Callback is valid. Let's process it
 
-            return array(
-                'status'    => 'error',
-                'msg'       => 'Bad Request'
-            );
-        }
+		$order_id = $order->id;
 
-        // Callback is valid. Let's process it
+		add_post_meta( $order_id, '_payiq_transaction_id', $post_data['transactionid'], true );
+		add_post_meta( $order_id, '_transaction_id', $post_data['transactionid'], true );
 
-        $order_id = $order->id;
+		if ( $order->status == 'completed' || $order->status == 'processing' ) {
 
-        add_post_meta( $order_id, '_payiq_transaction_id', $post_data['transactionid'], true );
-        add_post_meta( $order_id, '_transaction_id', $post_data['transactionid'], true );
+			if ( $this->debug == 'yes' ) {
+				$this->log->add( 'payiq', 'Aborting, Order #' . $order->id . ' is already complete.' );
+			}
 
+			return [
+				'status'    => 'error',
+				'msg'       => 'Order already processed'
+			];
+		}
 
+		if ( $post_data['operationtype'] == 'capture' ) {
 
-        if ( $order->status == 'completed' || $order->status == 'processing' ) {
+			if ( $post_data['operationtype'] == $post_data['settledamount'] ) {
 
-            if ( $this->debug == 'yes' ) {
-                $this->log->add( 'payiq', 'Aborting, Order #' . $order->id . ' is already complete.' );
-            }
+				$this->payment_captured( $order );
 
-            return array(
-                'status'    => 'error',
-                'msg'       => 'Order already processed'
-            );
-        }
+				return [
+					'status'    => 'ok',
+					'msg'       => 'authorized'
+				];
+			}
+			else {
 
-        if( $post_data['operationtype'] == 'capture' ) {
+				$order->add_order_note( printf( __( 'Aborting, captured amount does not equal order amount for order #%d. Please check this order manually.', 'woocommerce-gateway-payiq' ), $order->id ) );
 
-            if( $post_data['operationtype'] == $post_data['settledamount'] ) {
+				if ( $this->debug == 'yes' ) {
+					$this->log->add( 'payiq', 'Aborting, captured amount does not equal order amount for order #' . $order->id . '. Please check this order manually.' );
+				}
 
-                $this->payment_captured( $order );
+				return [
+					'status'    => 'error',
+					'msg'       => 'Order total does not match captured amount'
+				];
+			}
+		} elseif ( $post_data['operationtype'] == 'authorize' ) {
 
-                return array(
-                    'status'    => 'ok',
-                    'msg'       => 'authorized'
-                );
-            }
-            else {
+			$this->payment_authorized( $order );
 
-                $order->add_order_note( printf( __( 'Aborting, captured amount does not equal order amount for order #%d. Please check this order manually.', 'woocommerce-gateway-payiq' ), $order->id ) );
+			return [
+				'status'    => 'ok',
+				'msg'       => 'authorized'
+			];
 
-                if ( $this->debug == 'yes' ) {
-                    $this->log->add( 'payiq', 'Aborting, captured amount does not equal order amount for order #' . $order->id . '. Please check this order manually.' );
-                }
+		}
 
+		return [
+			'status'    => 'ok',
+			'msg'       => ''
+		];
+	}
 
-                return array(
-                    'status'    => 'error',
-                    'msg'       => 'Order total does not match captured amount'
-                );
-            }
+	private function payment_authorized( $order ) {
 
-        } elseif( $post_data['operationtype'] == 'authorize' ) {
+		update_post_meta( $order->id, '_payiq_order_authorized', 'yes' );
+		$order->add_order_note( __( 'PayIQ transaction authorized.', 'woocommerce-gateway-payiq' ) );
+	}
 
-            $this->payment_authorized( $order );
 
-            return array(
-                'status'    => 'ok',
-                'msg'       => 'authorized'
-            );
+	private function payment_captured( $order ) {
 
-        }
+		$order->payment_complete();
 
-        return array(
-            'status'    => 'ok',
-            'msg'       => ''
-        );
-    }
+		update_post_meta( $order->id, '_payiq_order_captured', 'yes' );
+		$order->add_order_note( __( 'PayIQ transaction captured.', 'woocommerce-gateway-payiq' ) );
+	}
 
-    private function payment_authorized( $order ) {
 
-        update_post_meta( $order->id, '_payiq_order_authorized', 'yes' );
-        $order->add_order_note( __( 'PayIQ transaction authorized.', 'woocommerce-gateway-payiq' ) );
-    }
+	/**
+	 * @return bool
+	 */
+	function get_client_ip() {
 
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			$proxy_ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		else {
+			return $_SERVER['REMOTE_ADDR'];
+		}
 
-    private function payment_captured( $order ) {
+		//Validate proxy IPs
+		$proxy_ips = array_map( function( $ip ) {
+			return trim( $ip );
+		}, explode( ',', $this->proxy_ips ) );
 
-        $order->payment_complete();
+		if ( in_array( $proxy_ip, $proxy_ips ) ) {
+			return $proxy_ip;
+		}
 
-        update_post_meta( $order->id, '_payiq_order_captured', 'yes' );
-        $order->add_order_note( __( 'PayIQ transaction captured.', 'woocommerce-gateway-payiq' ) );
-    }
+		// Not valid
+		return false;
+	}
 
 
-    /**
-     * @return bool
-     */
-    function get_client_ip() {
+	/**
+	 * Called on PayIQ callback to finalize the payment
+	 */
+	function payment_complete() {
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $proxy_ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        else {
-            return $_SERVER['REMOTE_ADDR'];
-        }
+		print_r( $_REQUEST );
 
-        //Validate proxy IPs
-        $proxy_ips = array_map( function( $ip ) {
-            return trim( $ip );
-        }, explode( ',', $this->proxy_ips ) );
+		die();
 
-        if( in_array( $proxy_ip, $proxy_ips) ) {
-            return $proxy_ip;
-        }
+		$order_id = 0;
 
-        // Not valid
-        return false;
-    }
+		$order = wc_get_order( $order_id );
 
+		// Prepare redirect url
+		$redirect_url = $order->get_checkout_order_received_url();
 
-    /**
-     * Called on PayIQ callback to finalize the payment
-     */
-    function payment_complete()
-    {
-        print_r( $_REQUEST );
-
-        die();
-
-        $order_id = 0;
-
-        $order = wc_get_order( $order_id );
-
-
-
-        // Prepare redirect url
-        $redirect_url = $order->get_checkout_order_received_url();
-
-        // Return to Thank you page if this is a buyer-return-to-shop callback
-        wp_redirect( $redirect_url );
-        exit;
-    }
-
-
+		// Return to Thank you page if this is a buyer-return-to-shop callback
+		wp_redirect( $redirect_url );
+		exit;
+	}
 }

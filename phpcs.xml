@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<ruleset name="Post-Type-Creator">
-    <description>Post Type Creator rules for PHP_CodeSniffer</description>
+<ruleset name="WooCommerce-PayIQ">
+    <description>WooCommerce PayIQ gateway rules for PHP_CodeSniffer</description>
 
     <exclude-pattern>node_modules/*</exclude-pattern>
     <exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>xml-templates/*</exclude-pattern>
-    <exclude-pattern>docs/*</exclude-pattern>
 
     <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 

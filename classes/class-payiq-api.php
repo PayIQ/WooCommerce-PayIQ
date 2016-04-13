@@ -450,7 +450,6 @@ class PayIQAPI
 
 	function get_xml_fields( $xml, $fields = [], $namespace = 'http://schemas.wiredge.se/payment/api/v2/objects' ) {
 
-		print_r( $xml );
 		$xmldoc = new DOMDocument();
 		$xmldoc->loadXML( $xml );
 

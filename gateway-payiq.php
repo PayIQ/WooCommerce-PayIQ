@@ -3,19 +3,17 @@
 Plugin Name: WooCommerce PayIQ Gateway
 Plugin URI: http://woocommerce.com
 Description: Provides a <a href="http://payiq.se/" target="_blank">PayIQ</a> gateway for WooCommerce.
-Version: 2.1.6
+Version: 1.0.0
 Author: AngryCreative
 Author URI: http://angrycreative.se
 */
-
 
 /*
 Requirements:
 WordPress 4.0+
 WooCommerce 2.2+
 PHP 5.3+
- */
-
+*/
 
 add_action( 'plugins_loaded', 'init_wc_gateway_payiq' );
 
@@ -44,7 +42,6 @@ function init_wc_gateway_payiq() {
 	if ( ! defined( 'WC_PAYIQ_PLUGIN_BASENAME' ) ) {
 		define( 'WC_PAYIQ_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 	}
-
 	// Plugin Folder URL
 	if ( ! defined( 'WC_PAYIQ_PLUGIN_URL' ) ) {
 		define( 'WC_PAYIQ_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -67,37 +64,4 @@ function init_wc_gateway_payiq() {
 	} );
 
 }
-
-
-
-add_action('init', function() {
-
-	if ( ! isset( $_GET['payiq'] ) ) {
-		return;
-	}
-
-	require_once 'classes/class-soapclient.php';
-	require_once 'classes/class-payiq-api.php';
-
-	$service_name = 'AngryTest01';
-	$shared_secret = 'bxDd8jMWl5';
-
-	$order = wc_get_order( 1396 );
-
-	//1387
-	$api = new PayIQAPI( $service_name, $shared_secret, $order );
-
-	$api->setOrder( $order );
-	$api->prepareSession();
-
-},999);
-
-function woo_add_cart_fee() {
-
-	global $woocommerce;
-
-	$woocommerce->cart->add_fee( __( 'Custom fee', 'woocommerce' ), 15 );
-
-}
-add_action( 'woocommerce_cart_calculate_fees', 'woo_add_cart_fee' );
 

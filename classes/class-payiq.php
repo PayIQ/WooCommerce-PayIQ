@@ -76,7 +76,6 @@ class PayIQ {
 			<?php endforeach; ?>
 			</p></div>
 		<?php
-
 	}
 
 	function add_plugin_menu() {

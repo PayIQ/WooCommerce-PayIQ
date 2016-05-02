@@ -1,6 +1,6 @@
 <?php
 /**
- * Class WC_Gateway_Dibs_CC
+ * Class WC_Gateway_PayIQ
  */
 class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
@@ -127,7 +127,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 					'no'            => __( 'Norwegian', 'woocommerce-gateway-payiq' ),
 					'sv'            => __( 'Swedish', 'woocommerce-gateway-payiq' ),
 				],
-				'description' => __( 'Set the language in which the page will be opened when the customer is redirected to DIBS.', 'woocommerce-gateway-payiq' ),
+				'description' => __( 'Set the language in which the page will be opened when the customer is redirected to PayIQ.', 'woocommerce-gateway-payiq' ),
 				'default'     => 'sv'
 			],
 			/*
@@ -181,9 +181,9 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
             ),
             */
 			'debug'                    => [
-				'title'   => __( 'Debug', 'woocommerce-gateway-dibs' ),
+				'title'   => __( 'Debug', 'woocommerce-gateway-payiq' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'woocommerce-gateway-dibs' ),
+				'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'woocommerce-gateway-payiq' ),
 				'default' => 'no'
 			]
 

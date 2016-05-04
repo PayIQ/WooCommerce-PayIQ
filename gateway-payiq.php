@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WooCommerce PayIQ Gateway
- * Plugin URI: http://woocommerce.com
+ * Plugin URI: https://wordpress.org/plugins/payiq-wc-gateway/
  * Description: Provides a <a href="http://payiq.se/" target="_blank">PayIQ</a> gateway for WooCommerce.
  * Version: 1.0.0
  * Author: PayIQ

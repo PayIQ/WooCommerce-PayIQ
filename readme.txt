@@ -1,5 +1,5 @@
 === PayIQ WooCommerce Gateway ===
-Contributors: pekz0r, payiq
+Contributors: pekz0r, payiq, angrycreative
 Tags: comments, spam
 Requires at least: 4.0
 Tested up to: 4.5

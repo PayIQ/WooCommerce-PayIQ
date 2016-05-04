@@ -27,6 +27,18 @@ function init_wc_gateway_payiq() {
 		return;
 	}
 
+	if ( ! class_exists( 'SoapClient' ) ) {
+		add_action( 'admin_notices', function() {
+			?>
+			<div class="notice notice-error">
+				<p><?php _e( 'PayIQ Gateway requires PHP SoapClient. Ask your system administrator to install the PHP Soap extension.', 'woocommerce-gateway-payiq' ); ?></p>
+			</div>
+			<?php
+		});
+
+		return;
+	}
+
 	/**
 	 * Localisation
 	 */

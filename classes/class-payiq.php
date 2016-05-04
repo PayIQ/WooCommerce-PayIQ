@@ -115,6 +115,11 @@ class PayIQ {
 
 		$order = $this->get_order_from_reference();
 
+		if( $order === false )
+		{
+			return;
+		}
+
 		//$order->update_status('processing', __('Order paid with PayIQ', 'woocommerce-gateway-payiq'));
 		$order->payment_complete();
 
@@ -128,7 +133,20 @@ class PayIQ {
 
 		$order = $this->get_order_from_reference();
 
-		//$order->update_status('processing', __('Order paid with PayIQ', 'woocommerce-gateway-payiq'));
+		if( $order === false )
+		{
+			return;
+		}
+
+		$order->update_status(
+			'processing',
+			__(
+				'PayIQ payment failed.'.
+				'Either the customer canceled the payment or '.
+				'there was not enough funds on the card to cover the order.'
+				, 'woocommerce-gateway-payiq'
+			)
+		);
 
 		$gateway = new WC_Gateway_PayIQ();
 		$gateway->cancel_order( $order, stripslashes_deep( $_GET ) );
@@ -138,6 +156,11 @@ class PayIQ {
 	function process_callback() {
 
 		$order = $this->get_order_from_reference( $_GET['orderreference'] );
+
+		if( $order === false )
+		{
+			return;
+		}
 
 		$gateway = new WC_Gateway_PayIQ();
 

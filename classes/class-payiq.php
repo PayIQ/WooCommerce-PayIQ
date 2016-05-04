@@ -94,9 +94,14 @@ class PayIQ {
 		return array_merge( $plugin_links, $links );
 	}
 
-	function get_order_from_reference() {
+	function get_order_from_reference( $order_id = false ) {
 
-		$order_id = (int) str_replace( 'order_', '', $_GET['orderreference'] );
+		if( $order_id == false ) {
+			$order_id = $_GET['orderreference'];
+		}
+
+		//$order_id = intval( str_replace( 'order', '', $order_id ) );
+		$order_id = intval( $order_id );
 
 		if ( $order_id > 0 ) {
 			return wc_get_order( $order_id );

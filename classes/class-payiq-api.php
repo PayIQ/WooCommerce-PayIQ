@@ -226,7 +226,7 @@ class PayIQAPI
 
 	function get_order_ref() {
 
-		return 'order_' . $this->order->id;
+		return $this->order->id;
 	}
 
 	function get_customer_ref() {

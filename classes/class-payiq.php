@@ -27,7 +27,7 @@ class PayIQ {
 
 		if ( ( strpos( $_SERVER['REQUEST_URI'], '/woocommerce/payiq-failure' ) !== false ) ) {
 
-			$this->process_success( );
+			$this->process_failed( );
 		}
 
 		add_filter( 'plugin_action_links_' . WC_PAYIQ_PLUGIN_BASENAME, [ $this, 'add_action_links' ] );

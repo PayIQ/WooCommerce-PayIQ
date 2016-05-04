@@ -1,19 +1,21 @@
 <?php
-/*
-Plugin Name: WooCommerce PayIQ Gateway
-Plugin URI: http://woocommerce.com
-Description: Provides a <a href="http://payiq.se/" target="_blank">PayIQ</a> gateway for WooCommerce.
-Version: 1.0.0
-Author: PayIQ
-Author URI: http://payiq.se/
-*/
+/**
+ * Plugin Name: WooCommerce PayIQ Gateway
+ * Plugin URI: http://woocommerce.com
+ * Description: Provides a <a href="http://payiq.se/" target="_blank">PayIQ</a> gateway for WooCommerce.
+ * Version: 1.0.0
+ * Author: PayIQ
+ * Author URI: http://payiq.se/
+ * Text Domain: my-plugin
+ * Domain Path: /languages
+ */
 
-/*
-Requirements:
-WordPress 4.0+
-WooCommerce 2.2+
-PHP 5.3+
-*/
+/**
+ * Requirements:
+ * WordPress 4.0+
+ * WooCommerce 2.2+
+ * PHP 5.3+
+ */
 
 add_action( 'plugins_loaded', 'init_wc_gateway_payiq' );
 

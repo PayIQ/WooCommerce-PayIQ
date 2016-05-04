@@ -14,8 +14,7 @@
                             <a:Quantity><?php echo $orderItem['Quantity']; ?></a:Quantity>
                             <a:SKU><?php echo $orderItem['SKU']; ?></a:SKU>
                             <a:UnitPrice><?php echo $orderItem['UnitPrice']; ?></a:UnitPrice>
-                        </a:OrderItem>
-                        <?php endforeach; ?>
+                        </a:OrderItem><?php endforeach; echo "\n"; ?>
                     </a:Items>
                     <a:OrderCategory i:nil="true"/>
                     <a:OrderReference><?php echo $data['OrderInfo']['OrderReference']; ?></a:OrderReference>

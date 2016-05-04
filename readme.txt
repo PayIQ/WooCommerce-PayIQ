@@ -14,13 +14,13 @@ This plugins integrates you WooCommerce store with PayIQs payment service
 This plugins integrates you WooCommerce store with PayIQs payment service.
 The customer will be sent to an external payment window where they will asked to fill in their card information. The available payment methods in the payment window is card and bank transfer(BACS).
 
-Read more on [PayIQ.se](http://payiq.se/ "PayIQ.se - Maximera din försäljning på nätet")
+Read more on [PayIQ.se](http://payiq.se/ "PayIQ.se - Maximera din försäljning på nätet").
 
 == Installation ==
 
-The easiest way to install the plugin is searching for "payiq" in WordPress admin and click install. Click activate when the plugin is installed.
+The easiest way to install the plugin is searching for `payiq` in WordPress admin and click install. Click activate when the plugin is installed.
 
-When the plugin is installed and activated go to "WooCommerce > Settings > Checkout > PayIQ". Fill in "Service name", "Shared secret" and any other fields you want to configure.
+When the plugin is installed and activated go to `WooCommerce > Settings > Checkout > PayIQ`. Fill in `Service name`, `Shared secret` and any other fields you want to configure.
 
 == Frequently Asked Questions ==
 

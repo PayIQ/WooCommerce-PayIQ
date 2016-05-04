@@ -32,7 +32,7 @@ function init_wc_gateway_payiq() {
 	 */
 	load_plugin_textdomain( 'woocommerce-gateway-payiq', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	/*
+	/**
      * Constants
      */
 	// Plugin Folder Path

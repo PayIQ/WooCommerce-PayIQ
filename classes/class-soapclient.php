@@ -28,7 +28,7 @@ class PayIQSoapClient extends SoapClient {
 		$logger = new WC_Logger();
 		$logger->add( 'payiq', 'API Call: ' . PHP_EOL .
 			'REQUEST:' . PHP_EOL . print_r( $request, true ) . PHP_EOL .
-		'RESPONSE:' . PHP_EOL . print_r( $result, true ) . PHP_EOL.PHP_EOL );
+			'RESPONSE:' . PHP_EOL . print_r( $result, true ) . PHP_EOL.PHP_EOL );
 
 		return $result;
 	}

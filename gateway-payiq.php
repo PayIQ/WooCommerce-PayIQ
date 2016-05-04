@@ -6,7 +6,7 @@
  * Version: 1.0.0
  * Author: PayIQ
  * Author URI: http://payiq.se/
- * Text Domain: my-plugin
+ * Text Domain: woocommerce-gateway-payiq
  * Domain Path: /languages
  */
 

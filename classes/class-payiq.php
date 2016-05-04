@@ -52,12 +52,12 @@ class PayIQ {
 		$order = $theorder;
 
 		$meta_keys = [
-			'_payiq_order_reference'            => __( 'Order reference', 'woocommerce-gateway-payiq' ),
-			'_payiq_transaction_id'             => __( 'Transaction ID', 'woocommerce-gateway-payiq' ),
-			'_payiq_order_payment_method'       => __( 'Payment method', 'woocommerce-gateway-payiq' ),
-			'_payiq_order_payment_directbank'   => __( 'Bank', 'woocommerce-gateway-payiq' ),
-			'_payiq_order_authorized'           => __( 'Authorized', 'woocommerce-gateway-payiq' ),
-			'_payiq_order_captured'             => __( 'Captured', 'woocommerce-gateway-payiq' ),
+			'_payiq_order_reference'            => __( 'Order reference', 'payiq-wc-gateway' ),
+			'_payiq_transaction_id'             => __( 'Transaction ID', 'payiq-wc-gateway' ),
+			'_payiq_order_payment_method'       => __( 'Payment method', 'payiq-wc-gateway' ),
+			'_payiq_order_payment_directbank'   => __( 'Bank', 'payiq-wc-gateway' ),
+			'_payiq_order_authorized'           => __( 'Authorized', 'payiq-wc-gateway' ),
+			'_payiq_order_captured'             => __( 'Captured', 'payiq-wc-gateway' ),
 		];
 
 		?>
@@ -81,13 +81,13 @@ class PayIQ {
 	function add_plugin_menu() {
 
 		add_submenu_page(
-			'woocommerce', __( 'PayIQ', 'woocommerce-gateway-payiq' ), __( 'PayIQ', 'woocommerce-gateway-payiq' ), 'manage_woocommerce', 'woocommerce-gateway-payiq', [$this, 'display_debug_log_page']
+			'woocommerce', __( 'PayIQ', 'payiq-wc-gateway' ), __( 'PayIQ', 'payiq-wc-gateway' ), 'manage_woocommerce', 'payiq-wc-gateway', [$this, 'display_debug_log_page']
 		);
 	}
 
 	function add_action_links( $links ) {
 		$plugin_links = [
-			'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_payiq' ) . '">' . __( 'Settings', 'woocommerce-gateway-payiq' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_payiq' ) . '">' . __( 'Settings', 'payiq-wc-gateway' ) . '</a>',
 		];
 
 		// Merge our new link with the default ones
@@ -120,7 +120,7 @@ class PayIQ {
 			return;
 		}
 
-		//$order->update_status('processing', __('Order paid with PayIQ', 'woocommerce-gateway-payiq'));
+		//$order->update_status('processing', __('Order paid with PayIQ', 'payiq-wc-gateway'));
 		$order->payment_complete();
 
 		$success_url = $order->get_checkout_order_received_url();
@@ -144,7 +144,7 @@ class PayIQ {
 				'PayIQ payment failed.'.
 				'Either the customer canceled the payment or '.
 				'there was not enough funds on the card to cover the order.'
-				, 'woocommerce-gateway-payiq'
+				, 'payiq-wc-gateway'
 			)
 		);
 

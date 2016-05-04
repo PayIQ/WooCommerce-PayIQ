@@ -6,7 +6,7 @@
  * Version: 1.0.0
  * Author: PayIQ
  * Author URI: http://payiq.se/
- * Text Domain: woocommerce-gateway-payiq
+ * Text Domain: payiq-wc-gateway
  * Domain Path: /languages
  */
 
@@ -33,7 +33,7 @@ function init_wc_gateway_payiq() {
 		add_action( 'admin_notices', function() {
 			?>
 			<div class="notice notice-error">
-				<p><?php _e( 'PayIQ Gateway requires PHP SoapClient. Ask your system administrator to install the PHP Soap extension.', 'woocommerce-gateway-payiq' ); ?></p>
+				<p><?php _e( 'PayIQ Gateway requires PHP SoapClient. Ask your system administrator to install the PHP Soap extension.', 'payiq-wc-gateway' ); ?></p>
 			</div>
 			<?php
 		});
@@ -44,7 +44,7 @@ function init_wc_gateway_payiq() {
 	/**
 	 * Localisation
 	 */
-	load_plugin_textdomain( 'woocommerce-gateway-payiq', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain( 'payiq-wc-gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
 	/**
      * Constants

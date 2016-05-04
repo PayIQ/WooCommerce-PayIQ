@@ -23,8 +23,8 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$this->id = 'payiq';
 		$this->icon = '';
 		$this->has_fields = false;
-		$this->method_title = __( 'PayIQ', 'woocommerce-gateway-payiq' );
-		$this->method_description = __( 'PayIQ', 'woocommerce-gateway-payiq' );
+		$this->method_title = __( 'PayIQ', 'payiq-wc-gateway' );
+		$this->method_description = __( 'PayIQ', 'payiq-wc-gateway' );
 
 		// Load the form fields for options page.
 		$this->init_form_fields();
@@ -88,102 +88,102 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		$this->form_fields = [
 			'enabled' => [
-				'title'         => __( 'Enable/Disable', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Enable/Disable', 'payiq-wc-gateway' ),
 				'type'          => 'checkbox',
-				'label'         => __( 'Enable PayIQ payment gateway', 'woocommerce-gateway-payiq' ),
+				'label'         => __( 'Enable PayIQ payment gateway', 'payiq-wc-gateway' ),
 				'default'       => 'yes'
 			],
 			'title' => [
-				'title'         => __( 'Title', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Title', 'payiq-wc-gateway' ),
 				'type'          => 'text',
-				'description'   => __( 'This is the title of the payment option that the user sees during checkout, in emails and order history.', 'woocommerce-gateway-payiq' ),
-				'default'       => __( 'PayIQ', 'woocommerce-gateway-payiq' ),
+				'description'   => __( 'This is the title of the payment option that the user sees during checkout, in emails and order history.', 'payiq-wc-gateway' ),
+				'default'       => __( 'PayIQ', 'payiq-wc-gateway' ),
 				'desc_tip'      => true,
 			],
 			'description' => [
-				'title'         => __( 'Description', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Description', 'payiq-wc-gateway' ),
 				'type'          => 'textarea',
-				'description'   => __( 'This is the description of the payment option that the user sees during checkout.', 'woocommerce-gateway-payiq' ),
-				'default'       => __( 'Pay via PayIQ using credit card or bank transfer.', 'woocommerce-gateway-payiq' )
+				'description'   => __( 'This is the description of the payment option that the user sees during checkout.', 'payiq-wc-gateway' ),
+				'default'       => __( 'Pay via PayIQ using credit card or bank transfer.', 'payiq-wc-gateway' )
 			],
 			'alternative_icon'         => [
-				'title'       => __( 'Alternative payment icon', 'woocommerce-gateway-payiq' ),
+				'title'       => __( 'Alternative payment icon', 'payiq-wc-gateway' ),
 				'type'        => 'text',
-				'description' => sprintf( __( 'Add the URL to an alternative payment icon that the user sees during checkout. Leave blank to use the default image. Alternative payment method logos can be found <a href="%s" target="_blank">here</a>.', 'woocommerce-gateway-payiq' ), 'https://secure.payiq.se/customer/Support/Logos' ),
+				'description' => sprintf( __( 'Add the URL to an alternative payment icon that the user sees during checkout. Leave blank to use the default image. Alternative payment method logos can be found <a href="%s" target="_blank">here</a>.', 'payiq-wc-gateway' ), 'https://secure.payiq.se/customer/Support/Logos' ),
 				'default'     => ''
 			],
 			'alternative_icon_width'   => [
-				'title'       => __( 'Icon width', 'woocommerce-gateway-payiq' ),
+				'title'       => __( 'Icon width', 'payiq-wc-gateway' ),
 				'type'        => 'text',
-				'description' => __( 'The width of the Alternative payment icon.', 'woocommerce-gateway-payiq' ),
+				'description' => __( 'The width of the Alternative payment icon.', 'payiq-wc-gateway' ),
 				'default'     => ''
 			],
 			'language' => [
-				'title'         => __( 'Language', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Language', 'payiq-wc-gateway' ),
 				'type'          => 'select',
 				'options'       => [
-					'en'            => __( 'English', 'woocommerce-gateway-payiq' ),
-					'fi'            => __( 'Finnish', 'woocommerce-gateway-payiq' ),
-					'no'            => __( 'Norwegian', 'woocommerce-gateway-payiq' ),
-					'sv'            => __( 'Swedish', 'woocommerce-gateway-payiq' ),
+					'en'            => __( 'English', 'payiq-wc-gateway' ),
+					'fi'            => __( 'Finnish', 'payiq-wc-gateway' ),
+					'no'            => __( 'Norwegian', 'payiq-wc-gateway' ),
+					'sv'            => __( 'Swedish', 'payiq-wc-gateway' ),
 				],
-				'description' => __( 'Set the language in which the page will be opened when the customer is redirected to PayIQ.', 'woocommerce-gateway-payiq' ),
+				'description' => __( 'Set the language in which the page will be opened when the customer is redirected to PayIQ.', 'payiq-wc-gateway' ),
 				'default'     => 'sv'
 			],
 			/*
             'payment_method' => array(
-                'title'         => __( 'Payment Method', 'woocommerce-gateway-payiq' ),
+                'title'         => __( 'Payment Method', 'payiq-wc-gateway' ),
                 'type'          => 'select',
                 'options'       => array(
-                    'NotSet'        => __( 'Not set', 'woocommerce-gateway-payiq' ),
-                    'Card'          => __( 'Card payment', 'woocommerce-gateway-payiq' ),
-                    'Direct'        => __( 'Direct bank transfer', 'woocommerce-gateway-payiq' )
+                    'NotSet'        => __( 'Not set', 'payiq-wc-gateway' ),
+                    'Card'          => __( 'Card payment', 'payiq-wc-gateway' ),
+                    'Direct'        => __( 'Direct bank transfer', 'payiq-wc-gateway' )
                 ),
-                'description'   => __( '"Not set" allows the user to choose between card payment and direct bank transfer in the payment window', 'woocommerce-gateway-payiq' ),
+                'description'   => __( '"Not set" allows the user to choose between card payment and direct bank transfer in the payment window', 'payiq-wc-gateway' ),
                 'default'       => 'no'
             ),
             */
 			'auto_capture' => [
-				'title'         => __( 'Transaction capture', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Transaction capture', 'payiq-wc-gateway' ),
 				'type'          => 'select',
 				'options'       => [
-					'yes'           => __( 'On Purchase', 'woocommerce-gateway-payiq' ),
-					'complete'      => __( 'On order completion', 'woocommerce-gateway-payiq' ),
-					'no'            => __( 'No', 'woocommerce-gateway-payiq' )
+					'yes'           => __( 'On Purchase', 'payiq-wc-gateway' ),
+					'complete'      => __( 'On order completion', 'payiq-wc-gateway' ),
+					'no'            => __( 'No', 'payiq-wc-gateway' )
 				],
-				'description'   => __( '"On purchase" means that the money in transferred from the customers account immediately. With "On order completion" the money is transferred when the order is marked as completed. With "No" the transfer needs to be triggered manually from the PayIQ admin.', 'woocommerce-gateway-payiq' ),
+				'description'   => __( '"On purchase" means that the money in transferred from the customers account immediately. With "On order completion" the money is transferred when the order is marked as completed. With "No" the transfer needs to be triggered manually from the PayIQ admin.', 'payiq-wc-gateway' ),
 				'default'       => 'no'
 			],
 			'service_name' => [
-				'title'         => __( 'Service name', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Service name', 'payiq-wc-gateway' ),
 				'type'          => 'text',
-				'description'   => __( 'Unique id of your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
+				'description'   => __( 'Unique id of your integration. You get this from PayIQ.', 'payiq-wc-gateway' ),
 				'default'       => ''
 			],
 			'shared_secret' => [
-				'title'         => __( 'Shared secret', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Shared secret', 'payiq-wc-gateway' ),
 				'type'          => 'text',
-				'description'   => __( 'Unique key for your integration. You get this from PayIQ.', 'woocommerce-gateway-payiq' ),
+				'description'   => __( 'Unique key for your integration. You get this from PayIQ.', 'payiq-wc-gateway' ),
 				'default'       => ''
 			],
 			'proxy_ips' => [
-				'title'         => __( 'Proxy IP-addresses', 'woocommerce-gateway-payiq' ),
+				'title'         => __( 'Proxy IP-addresses', 'payiq-wc-gateway' ),
 				'type'          => 'text',
-				'description'   => __( 'If you are using a proxy such as Varnish or Nginx(as a proxy), we need to validate the client IPs for security reasons. Enter all proxy IPs here separated by comma.', 'woocommerce-gateway-payiq' ),
+				'description'   => __( 'If you are using a proxy such as Varnish or Nginx(as a proxy), we need to validate the client IPs for security reasons. Enter all proxy IPs here separated by comma.', 'payiq-wc-gateway' ),
 				'default'       => ''
 			],
 			/*
             'testmode'                 => array(
-                'title'   => __( 'Test Mode', 'woocommerce-gateway-payiq' ),
+                'title'   => __( 'Test Mode', 'payiq-wc-gateway' ),
                 'type'    => 'checkbox',
-                'label'   => __( 'Enable PayIQ Sandbox/Test Mode.', 'woocommerce-gateway-payiq' ),
+                'label'   => __( 'Enable PayIQ Sandbox/Test Mode.', 'payiq-wc-gateway' ),
                 'default' => 'yes'
             ),
             */
 			'debug'                    => [
-				'title'   => __( 'Debug', 'woocommerce-gateway-payiq' ),
+				'title'   => __( 'Debug', 'payiq-wc-gateway' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'woocommerce-gateway-payiq' ),
+				'label'   => __( 'Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)', 'payiq-wc-gateway' ),
 				'default' => 'no'
 			]
 
@@ -244,7 +244,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$order = wc_get_order( $order_id );
 
 		// Mark as on-hold (we're awaiting the cheque)
-		$order->update_status( 'on-hold', __( 'Awaiting PayIQ payment', 'woocommerce-gateway-payiq' ) );
+		$order->update_status( 'on-hold', __( 'Awaiting PayIQ payment', 'payiq-wc-gateway' ) );
 
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -355,7 +355,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			if ( $this->is_debug() ) {
 				$this->logger->add( 'payiq', 'Capture transaction failed for order #'.$order->id.'. Reason: '. $data['ErrorCode'] );
 			}
-			$order->add_order_note( __( 'PayIQ callback failed. Error code: '.$data['ErrorCode'], 'woocommerce-gateway-payiq' ) );
+			$order->add_order_note( __( 'PayIQ callback failed. Error code: '.$data['ErrorCode'], 'payiq-wc-gateway' ) );
 		}
 		if ( $data['ErrorCode'] == 'TransactionCannotBeManaged' ) {
 
@@ -389,18 +389,18 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		if ( $order->status == 'pending' ) {
 
 			// Cancel order and restore stock
-			$order->cancel_order( __( 'Order cancelled by customer.', 'woocommerce-gateway-payiq' ) );
+			$order->cancel_order( __( 'Order cancelled by customer.', 'payiq-wc-gateway' ) );
 
 			// Show notice for customer
-			wc_add_notice( __( 'Your order was cancelled.', 'woocommerce-gateway-payiq' ), 'error' );
+			wc_add_notice( __( 'Your order was cancelled.', 'payiq-wc-gateway' ), 'error' );
 
 		} elseif ( $order->status != 'pending' ) {
 
-			wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'woocommerce-gateway-payiq' ), 'error' );
+			wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'payiq-wc-gateway' ), 'error' );
 
 		} else {
 
-			wc_add_notice( __( 'Invalid order.', 'woocommerce-gateway-payiq' ), 'error' );
+			wc_add_notice( __( 'Invalid order.', 'payiq-wc-gateway' ), 'error' );
 		}
 
 		wp_safe_redirect( wc_get_cart_url() );
@@ -507,7 +507,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			}
 			else {
 
-				$order->add_order_note( printf( __( 'Aborting, captured amount does not equal order amount for order #%d. Please check this order manually.', 'woocommerce-gateway-payiq' ), $order->id ) );
+				$order->add_order_note( printf( __( 'Aborting, captured amount does not equal order amount for order #%d. Please check this order manually.', 'payiq-wc-gateway' ), $order->id ) );
 
 				if ( $this->debug == 'yes' ) {
 					$this->log->add( 'payiq', 'Aborting, captured amount does not equal order amount for order #' . $order->id . '. Please check this order manually.' );
@@ -538,7 +538,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 	private function payment_authorized( $order ) {
 
 		update_post_meta( $order->id, '_payiq_order_authorized', 'yes' );
-		$order->add_order_note( __( 'PayIQ transaction authorized.', 'woocommerce-gateway-payiq' ) );
+		$order->add_order_note( __( 'PayIQ transaction authorized.', 'payiq-wc-gateway' ) );
 	}
 
 
@@ -547,7 +547,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$order->payment_complete();
 
 		update_post_meta( $order->id, '_payiq_order_captured', 'yes' );
-		$order->add_order_note( __( 'PayIQ transaction captured.', 'woocommerce-gateway-payiq' ) );
+		$order->add_order_note( __( 'PayIQ transaction captured.', 'payiq-wc-gateway' ) );
 	}
 
 

@@ -1,0 +1,244 @@
+# Copyright (C) 2016 WooCommerce PayIQ Gateway
+# This file is distributed under the same license as the WooCommerce PayIQ Gateway package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce PayIQ Gateway 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payiq-wc-gateway\n"
+"POT-Creation-Date: 2016-05-04 09:10:47+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: classes/class-payiq-api.php:327
+msgid "Order #%s."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:26 classes/class-payiq-gateway.php:27
+#: classes/class-payiq-gateway.php:100 classes/class-payiq.php:84
+msgid "PayIQ"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:91
+msgid "Enable/Disable"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:93
+msgid "Enable PayIQ payment gateway"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:97
+msgid "Title"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:99
+msgid ""
+"This is the title of the payment option that the user sees during checkout, "
+"in emails and order history."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:104
+msgid "Description"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:106
+msgid ""
+"This is the description of the payment option that the user sees during "
+"checkout."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:107
+msgid "Pay via PayIQ using credit card or bank transfer."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:110
+msgid "Alternative payment icon"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:112
+msgid ""
+"Add the URL to an alternative payment icon that the user sees during "
+"checkout. Leave blank to use the default image. Alternative payment method "
+"logos can be found <a href=\"%s\" target=\"_blank\">here</a>."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:116
+msgid "Icon width"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:118
+msgid "The width of the Alternative payment icon."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:122
+msgid "Language"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:125
+msgid "English"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:126
+msgid "Finnish"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:127
+msgid "Norwegian"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:128
+msgid "Swedish"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:130
+msgid ""
+"Set the language in which the page will be opened when the customer is "
+"redirected to PayIQ."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:147
+msgid "Transaction capture"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:150
+msgid "On Purchase"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:151
+msgid "On order completion"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:152
+msgid "No"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:154
+msgid ""
+"\"On purchase\" means that the money in transferred from the customers "
+"account immediately. With \"On order completion\" the money is transferred "
+"when the order is marked as completed. With \"No\" the transfer needs to be "
+"triggered manually from the PayIQ admin."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:158
+msgid "Service name"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:160
+msgid "Unique id of your integration. You get this from PayIQ."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:164
+msgid "Shared secret"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:166
+msgid "Unique key for your integration. You get this from PayIQ."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:170
+msgid "Proxy IP-addresses"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:172
+msgid ""
+"If you are using a proxy such as Varnish or Nginx(as a proxy), we need to "
+"validate the client IPs for security reasons. Enter all proxy IPs here "
+"separated by comma."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:184
+msgid "Debug"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:186
+msgid "Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:247
+msgid "Awaiting PayIQ payment"
+msgstr ""
+
+#: classes/class-payiq-gateway.php:392
+msgid "Order cancelled by customer."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:395
+msgid "Your order was cancelled."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:399
+msgid ""
+"Your order is not pending payment and could not be cancelled. If you think "
+"this is wrong, please contact us for assistance."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:403
+msgid "Invalid order."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:510
+msgid ""
+"Aborting, captured amount does not equal order amount for order #%d. Please "
+"check this order manually."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:541
+msgid "PayIQ transaction authorized."
+msgstr ""
+
+#: classes/class-payiq-gateway.php:550
+msgid "PayIQ transaction captured."
+msgstr ""
+
+#: classes/class-payiq.php:55
+msgid "Order reference"
+msgstr ""
+
+#: classes/class-payiq.php:56
+msgid "Transaction ID"
+msgstr ""
+
+#: classes/class-payiq.php:57
+msgid "Payment method"
+msgstr ""
+
+#: classes/class-payiq.php:58
+msgid "Bank"
+msgstr ""
+
+#: classes/class-payiq.php:59
+msgid "Authorized"
+msgstr ""
+
+#: classes/class-payiq.php:60
+msgid "Captured"
+msgstr ""
+
+#: classes/class-payiq.php:90
+msgid "Settings"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce PayIQ Gateway"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://woocommerce.com"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Provides a <a href=\"http://payiq.se/\" target=\"_blank\">PayIQ</a> gateway "
+"for WooCommerce."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "AngryCreative"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://angrycreative.se"
+msgstr ""

@@ -206,35 +206,27 @@ class PayIQ {
 
 
 	function display_debug_log_page() {
-		?>
-		<h3>Debug log</h3>
 
-		<br/>
-<textarea class="debug_log_view" disabled><?php echo $this->get_debug_log(); ?></textarea>
-<style>
-	.debug_log_view[disabled] {
-		verflow: auto;
-		height: 80vh;
-		max-height: 100vh;
-		width: 95%;
-		padding: 20px 2%;
-		color: #000;
-	}
-</style>
-<script>
-	jQuery('.debug_log_view').css('height', jQuery( window ).height() - (jQuery('.debug_log_view').offset().top + 100));
-</script>
-
-		<?php
+		self::get_view( 'debug-log' );
 	}
 
 
+	static function get_view( $view ) {
 
-	function get_debug_log() {
+		$view_path = WC_PAYIQ_PLUGIN_DIR . 'views/' . $view . '.php';
+
+		if( file_exists( $view_path )) {
+			require $view_path;
+		}
+	}
+
+	static function get_debug_log() {
 
 		$logfile = wc_get_log_file_path( 'payiq' );
 
-		echo $logfile;
+		if( !is_writable( $logfile ) || ( !file_exists($logfile) && !touch( $logfile ) ) ) {
+			return __( 'Debug log not writable', 'payiq-wc-gateway' );
+		}
 
 		return file_get_contents( $logfile );
 

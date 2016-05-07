@@ -210,6 +210,15 @@ class PayIQ {
 		self::get_view( 'debug-log' );
 	}
 
+	static function get_gateway_options( $key ) {
+
+		$options = get_option( 'woocommerce_payiq_settings', null );
+
+		if( key_exists( $key, $options ) ) {
+			return $options[$key];
+		}
+		return $options;
+	}
 
 	static function get_view( $view ) {
 

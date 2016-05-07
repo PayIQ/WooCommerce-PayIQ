@@ -195,12 +195,8 @@ class PayIQAPI
 	function api_call( $endpoint, $data ) {
 
 		try {
-			//var_dump($client->foo());
 
-			var_dump( $endpoint );
 			$response = $this->client->__soapCall( $endpoint, $data );
-
-			//$response = $this->client->PrepareSession( $data );
 
 			return $response;
 		} catch (Exception $e) {

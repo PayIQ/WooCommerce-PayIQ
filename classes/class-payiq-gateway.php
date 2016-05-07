@@ -26,6 +26,8 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$this->method_title = __( 'PayIQ', 'payiq-wc-gateway' );
 		$this->method_description = __( 'PayIQ', 'payiq-wc-gateway' );
 
+		$this->order_button_text  = __( 'Proceed to PayIQ', 'payiq-wc-gateway' );
+
 		// Load the form fields for options page.
 		$this->init_form_fields();
 
@@ -216,9 +218,23 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			$icon_src   = WC_PAYIQ_PLUGIN_URL.'/assets/logo_small.png';
 			$icon_width = '145';
 		}
+
 		$icon_html = '<img src="' . $icon_src . '" alt="PayIQ" style="max-width:' . $icon_width . 'px"/>';
 
-		return apply_filters( 'wc_dibs_icon_html', $icon_html );
+		/*
+		$icon_html .= sprintf( '<a href="%1$s" ' .
+				' class="about_paypal" ' .
+				' onclick="javascript:window.open(\'%1$s\',\'PayIQ\',\'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700\'); return false;" ' .
+				' title="' . esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) . '" ' .
+				' style="float: right;line-height: 52px; font-size: .83em;text-decoration: none;box-shadow: none;" ' .
+				'">' .
+			esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) .
+			'</a>',
+			esc_url( 'http://payiq.se/' )
+		);
+		*/
+
+		return apply_filters( 'wc_payiq_icon_html', $icon_html );
 	}
 
 

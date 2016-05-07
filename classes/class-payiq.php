@@ -109,9 +109,11 @@ class PayIQ {
 
 	function add_plugin_menu() {
 
-		add_submenu_page(
-			'woocommerce', __( 'PayIQ', 'payiq-wc-gateway' ), __( 'PayIQ', 'payiq-wc-gateway' ), 'manage_woocommerce', 'payiq-wc-gateway', [$this, 'display_debug_log_page']
-		);
+		if( self::get_gateway_options('debug') == 'yes' ) {
+			add_submenu_page(
+				'woocommerce', __( 'PayIQ', 'payiq-wc-gateway' ), __( 'PayIQ', 'payiq-wc-gateway' ), 'manage_woocommerce', 'payiq-wc-gateway', [$this, 'display_debug_log_page']
+			);
+		}
 	}
 
 	function add_action_links( $links ) {
@@ -207,7 +209,9 @@ class PayIQ {
 
 	function display_debug_log_page() {
 
-		self::get_view( 'debug-log' );
+		if( self::get_gateway_options('debug') == 'yes' ) {
+			self::get_view( 'debug-log' );
+		}
 	}
 
 	static function get_gateway_options( $key ) {

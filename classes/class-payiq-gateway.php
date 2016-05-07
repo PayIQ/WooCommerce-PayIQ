@@ -244,7 +244,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$order = wc_get_order( $order_id );
 
 		// Mark as on-hold (we're awaiting the cheque)
-		$order->update_status( 'on-hold', __( 'Awaiting PayIQ payment', 'payiq-wc-gateway' ) );
+		$order->update_status( 'pending', __( 'Awaiting PayIQ payment', 'payiq-wc-gateway' ) );
 
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -384,28 +384,72 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 	}
 
+	function payment_failed( $order, $post_data ) {
+
+		$this->logger = new WC_Logger();
+		$this->logger->add( 'payiq', print_r( $order, true ));
+		$this->logger->add( 'payiq', print_r( $post_data, true ));
+
+		// Show notice for customer
+		wc_add_notice( __( 'The payment failed. Please try another payment method or another card.', 'woocommerce-gateway-payiq' ), 'error' );
+
+		wp_safe_redirect( $order->get_checkout_payment_url() );
+		exit;
+
+	}
+
 	function cancel_order( $order, $post_data ) {
+
+		$this->logger = new WC_Logger();
+		$this->logger->add( 'payiq', print_r( $order, true ));
+		$this->logger->add( 'payiq', print_r( $post_data, true ));
+
 
 		if ( $order->status == 'pending' ) {
 
+
+			$order->update_status(
+				'pending',
+				__(
+					'PayIQ payment failed.'.
+					'Either the customer canceled the payment or '.
+					'there was not enough funds on the card to cover the order.'
+					, 'payiq-wc-gateway'
+				)
+			);
+
+
 			// Cancel order and restore stock
-			$order->cancel_order( __( 'Order cancelled by customer.', 'payiq-wc-gateway' ) );
+			//$order->cancel_order( __( 'Order cancelled by customer.', 'woocommerce-gateway-payiq' ) );
+
+
+
+			wp_safe_redirect( $order->get_checkout_payment_url() );
+			exit;
 
 			// Show notice for customer
-			wc_add_notice( __( 'Your order was cancelled.', 'payiq-wc-gateway' ), 'error' );
+			wc_add_notice( __( 'Your order was cancelled.', 'woocommerce-gateway-payiq' ), 'error' );
 
 		} elseif ( $order->status != 'pending' ) {
 
-			wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'payiq-wc-gateway' ), 'error' );
+			$order->update_status(
+				'processing',
+				__(
+					'PayIQ order could not be canceled.'
+					, 'payiq-wc-gateway'
+				)
+			);
+			wc_add_notice( __( 'Your order is not pending payment and could not be cancelled. If you think this is wrong, please contact us for assistance.', 'woocommerce-gateway-payiq' ), 'error' );
 
 		} else {
 
-			wc_add_notice( __( 'Invalid order.', 'payiq-wc-gateway' ), 'error' );
+			wc_add_notice( __( 'Invalid order.', 'woocommerce-gateway-payiq' ), 'error' );
 		}
 
 		wp_safe_redirect( wc_get_cart_url() );
 		exit;
 	}
+
 
 	public function validate_callback( $order, $post_data ) {
 

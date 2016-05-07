@@ -7,29 +7,58 @@ class PayIQ {
 	function __construct() {
 
 		add_action( 'init', [ $this, 'init' ] );
+	}
+
+	function log_callback( $type = '' ) {
+
+		$logger = new WC_Logger();
+
+		$logger->add(
+			'payiq',
+			PHP_EOL.PHP_EOL .
+			(!empty( $type ) ? 'Callback type: ' . $type . PHP_EOL : '') .
+			'Callback URI: '.$_SERVER['REQUEST_URI'] .
+			PHP_EOL.PHP_EOL .
+			'Callback params: '.print_r($_REQUEST, true) .
+			PHP_EOL.PHP_EOL
+		);
 
 	}
 
 
 	function init() {
 
+		$request_uri = $_SERVER['REQUEST_URI'];
+
+		if( preg_match( '/\/woocommerce\/payiq-(callback|success|failure)/', $request_uri, $match ) )
+		{
+			$type = $match[1];
+
+			$this->log_callback( $type );
+
+
+			switch( $type ) {
+
+				case 'failure' :
+
+					$this->process_failed( );
+
+					break;
+				case 'success' :
+
+					$this->process_success( );
+
+					break;
+				case 'callback' :
+
+					$this->process_callback( );
+
+					break;
+			}
+
+		}
+
 		// Add custom action links
-
-		if ( ( strpos( $_SERVER['REQUEST_URI'], '/woocommerce/payiq-callback' ) !== false ) ) {
-
-			$this->process_callback( );
-		}
-
-		if ( ( strpos( $_SERVER['REQUEST_URI'], '/woocommerce/payiq-success' ) !== false ) ) {
-
-			$this->process_success( );
-		}
-
-		if ( ( strpos( $_SERVER['REQUEST_URI'], '/woocommerce/payiq-failure' ) !== false ) ) {
-
-			$this->process_failed( );
-		}
-
 		add_filter( 'plugin_action_links_' . WC_PAYIQ_PLUGIN_BASENAME, [ $this, 'add_action_links' ] );
 
 		add_action( 'admin_menu', [$this, 'add_plugin_menu'] );
@@ -138,19 +167,9 @@ class PayIQ {
 			return;
 		}
 
-		$order->update_status(
-			'processing',
-			__(
-				'PayIQ payment failed.'.
-				'Either the customer canceled the payment or '.
-				'there was not enough funds on the card to cover the order.'
-				, 'payiq-wc-gateway'
-			)
-		);
-
 		$gateway = new WC_Gateway_PayIQ();
-		$gateway->cancel_order( $order, stripslashes_deep( $_GET ) );
-
+		$gateway->payment_failed( $order, stripslashes_deep( $_GET ) );
+		//$gateway->cancel_order( $order, stripslashes_deep( $_GET ) );
 	}
 
 	function process_callback() {

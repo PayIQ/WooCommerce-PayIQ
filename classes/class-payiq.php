@@ -7,6 +7,17 @@ class PayIQ {
 	function __construct() {
 
 		add_action( 'init', [ $this, 'init' ] );
+
+		$this->supports = array(
+			'products',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change'
+		);
 	}
 
 	function log_callback( $type = '' ) {
@@ -42,11 +53,11 @@ class PayIQ {
 				case 'failure' :
 
 					$this->process_failed( );
-
 					break;
 				case 'success' :
 
 					$this->process_success( );
+
 
 					break;
 				case 'callback' :
@@ -57,7 +68,7 @@ class PayIQ {
 			}
 
 		}
-
+		//die();
 		// Add custom action links
 		add_filter( 'plugin_action_links_' . WC_PAYIQ_PLUGIN_BASENAME, [ $this, 'add_action_links' ] );
 
@@ -68,6 +79,9 @@ class PayIQ {
 		add_action( 'woocommerce_order_status_completed', [ $this, 'capture_transaction' ] );
 
 		add_action( 'woocommerce_admin_order_data_after_order_details', [ $this, 'display_order_meta' ] );
+
+		add_action('woocommerce_scheduled_subscription_payment_payiq', [ $this, 'trigger_subscription_payments' ], 10, 2);
+
 	}
 
 	function display_order_meta() {
@@ -131,6 +145,7 @@ class PayIQ {
 			$order_id = $_GET['orderreference'];
 		}
 
+
 		//$order_id = intval( str_replace( 'order', '', $order_id ) );
 		$order_id = intval( $order_id );
 
@@ -145,6 +160,8 @@ class PayIQ {
 	function process_success() {
 
 		$order = $this->get_order_from_reference();
+		//$order = new WC_Order( $order->id );
+
 
 		if( $order === false )
 		{
@@ -183,12 +200,84 @@ class PayIQ {
 			return;
 		}
 
+
 		$gateway = new WC_Gateway_PayIQ();
 
 		//$gateway->validate_callback( $order, stripslashes_deep( $_GET ) );
 		$response = $gateway->process_callback( $order, stripslashes_deep( $_GET ) );
 
+		if($response['status'] == 'ok')
+		{
+			echo 'OK';
+			die();
+		}
 		wp_send_json( $response );
+	}
+
+	function trigger_subscription_payments( $order_total, $order ) {
+		global $woocommerce;
+
+		//$id = '1654';
+
+		if($order_total == 0){
+			$order_total = get_post_meta($order->id, '_order_total',  true );
+		}
+
+		$order->update_status( 'pending', __( 'Awaiting PayIQ payment', 'payiq-wc-gateway' ) );
+
+		//$subscription_period = WC_Subscriptions_Order::get_subscription_period( $order );
+
+/*		$sign_up_fee = WC_Subscriptions_Order::get_sign_up_fee( $order );
+
+		$initial_payment = WC_Subscriptions_Order::get_total_initial_payment( $order );
+
+		$order_total = WC_Subscriptions_Order::get_recurring_total( $order );
+
+		$subscription_interval = WC_Subscriptions_Order::get_subscription_interval( $order );
+
+		$subscription_installments = WC_Subscriptions_Order::get_subscription_length( $order ) / $subscription_interval;
+
+		$subscription_trial_length = WC_Subscriptions_Order::get_subscription_trial_length( $order );*/
+
+/*		foreach ( $order->get_items() as $item ) { /* This loops through each item in the order
+			$date = WC_Subscriptions_Order::get_next_payment_date ( $order, $item['product_id'] ); // This should get the next payment date...
+			if ( $date ) {
+				echo '<p style="margin: 16px 0 8px; text-align: left;">Your next payment is due on <strong>' . date( 'l jS F Y', strtotime( $date ) ) . '</strong></p>';
+			}
+		}*/
+		//$order = $this->get_order_from_reference( $_GET['orderreference'] );
+		//$amount_to_charge = WC_Subscriptions_Order::get_recurring_total( $order );
+		//$order = new WC_Order( $order->id );
+
+		//Add order to the log list under woocommerce->payiq
+		$logger = new WC_Logger();
+		$logger->add( 'payiq', 'Invalid IP: '.print_r($order, true) . 'trigger_sub_payment');
+		$logger->add( 'payiq', 'ORDER ID: '. print_r($order->id, true) . 'trigger_sub_payment');
+		//$logger->add( 'payiq', 'SUB ID: '. print_r($subscription) . 'trigger_sub_payment');
+
+		//Take out the subscription id from the order
+		$sub_id = get_post_meta($order->id, '_subscription_renewal',  true );
+
+		//take out the parent id from the subscription to get the parent order
+		$sub_id_parent = wp_get_post_parent_id( $sub_id );
+
+		//Get the payiq subscription id from parent order
+		$payiq_sub_id = get_post_meta($sub_id_parent, '_payiq_subscription_id',  true );
+
+
+
+		//Add the payiq subscriptionid to postmeta
+		add_post_meta($order->id, '_payiq_subscription_id', $payiq_sub_id,  true);
+
+		if( $order === false )
+		{
+			return;
+		}
+		$gateway = new WC_Gateway_PayIQ();
+
+		//Call on schedule subscription payment
+		$gateway->scheduled_subscription_payment( $order_total, $order);
+
 	}
 
 	/**
@@ -216,7 +305,7 @@ class PayIQ {
 
 	static function get_gateway_options( $key ) {
 
-		$options = get_option( 'woocommerce_payiq_settings', null );
+		$options = get_option( 'woocommerce_payiq_settings', array() );
 
 		if( key_exists( $key, $options ) ) {
 			return $options[$key];

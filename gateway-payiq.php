@@ -77,5 +77,6 @@ function init_wc_gateway_payiq() {
 		return $methods;
 	} );
 
+
 }
 

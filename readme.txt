@@ -1,5 +1,5 @@
 === PayIQ WooCommerce Gateway ===
-Contributors: pekz0r, payiq, angrycreative
+Contributors: pekz0r, payiq, angrycreative, kylegard
 Tags: PayIQ, WooCommerce, Gateway, Payments, WooCommmerce Gateway, PSP
 Requires at least: 4.0
 Tested up to: 4.5

@@ -6,7 +6,7 @@ class PayIQ {
 
 	function __construct() {
 
-		add_action( 'init', [ $this, 'init' ] );
+		add_action('init', array( $this, 'init' ));
 	}
 
 	function log_callback( $type = '' ) {
@@ -216,7 +216,7 @@ class PayIQ {
 
 	static function get_gateway_options( $key ) {
 
-		$options = get_option( 'woocommerce_payiq_settings', null );
+		$options = get_option( 'woocommerce_payiq_settings', array() );
 
 		if( key_exists( $key, $options ) ) {
 			return $options[$key];

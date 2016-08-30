@@ -3,7 +3,7 @@ Contributors: pekz0r, payiq, angrycreative, kylegard
 Tags: PayIQ, WooCommerce, Gateway, Payments, WooCommmerce Gateway, PSP
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,10 +35,16 @@ No. All the card information is handled in a hosted payment window and will not 
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.1 =
+* Bugfixes and PHP version 5.3 compatibility
+
+= 1.0.0 =
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+* Bugfixes. Please update.
 
 = 1.0 =
 First release

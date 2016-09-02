@@ -130,7 +130,7 @@ class PayIQAPI
 			case 'PrepareSession':
 			default:
 
-				$raw_sting = $this->service_name . ($this->order->get_total() * 100) . $this->order->get_order_currency() . $this->get_order_ref() . $this->shared_secret;
+				$raw_sting = $this->service_name . ($this->get_order_totals_decimals()) . $this->order->get_order_currency() . $this->get_order_ref() . $this->shared_secret;
 
 				break;
 		}
@@ -307,6 +307,19 @@ class PayIQAPI
 		print_r( $order_items );
 
 		return $order_items;
+	}
+
+	function get_order_totals_decimals(){
+
+		$order_items = $this->get_order_items();
+		$order_total = 0;
+		foreach($order_items as $order_item){
+
+			$item_price = $order_item['UnitPrice'] * $order_item['Quantity'];
+			$order_total += $item_price;
+		}
+
+		return $order_total;
 	}
 
 	function get_order_description() {

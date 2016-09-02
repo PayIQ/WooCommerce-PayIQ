@@ -2,7 +2,7 @@
 Contributors: pekz0r, payiq, angrycreative, kylegard
 Tags: PayIQ, WooCommerce, Gateway, Payments, WooCommmerce Gateway, PSP
 Requires at least: 4.0
-Tested up to: 4.5
+Tested up to: 4.6
 Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

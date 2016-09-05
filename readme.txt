@@ -35,10 +35,25 @@ No. All the card information is handled in a hosted payment window and will not 
 
 == Changelog ==
 
-= 1.0 =
+= 2.0 =
+* Added functionallty to have subscription payments. 
+
+= 1.0.2 =
+* Fix issues where order total is rounded in error when calculating the checksum.
+
+= 1.0.1 =
+* Bugfixes and PHP version 5.3 compatibility
+
+= 1.0.0 =
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+* Bugfixes. Please update.
+
+= 1.0.1 =
+* Bugfixes. Please update.
 
 = 1.0 =
 First release

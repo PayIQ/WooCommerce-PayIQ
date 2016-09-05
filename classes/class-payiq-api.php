@@ -107,10 +107,6 @@ class PayIQAPI
 
 				//ServiceName, TransactionId, SharedSecret
 				$transaction_id = get_post_meta( $this->order->id, 'payiq_transaction_id', true );
-				//echo "hello";
-				//var_dump(get_post_meta( $this->order->id));
-				//var_dump($transaction_id);
-
 
 				$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
 				break;
@@ -141,10 +137,8 @@ class PayIQAPI
 				//ServiceName, SubscriptionId, Amount, CurrencyCode, OrderReference, SharedSecret
 				$subscription_id = get_post_meta( $this->order->id, '_payiq_subscription_id', true );
 				$currency = get_post_meta( $this->order->id, '_order_currency', true );
-				$amount_to_charge = $this->order->get_total();
-				$amount_to_charge = $amount_to_charge * 100;
 
-				$raw_sting = $this->service_name . $subscription_id . $amount_to_charge . $currency . $this->get_order_ref() . $this->shared_secret;
+				$raw_sting = $this->service_name . $subscription_id . ($this->get_order_totals_decimals())  . $currency . $this->get_order_ref() . $this->shared_secret;
 
 				break;
 
@@ -158,7 +152,6 @@ class PayIQAPI
 			case 'AuthorizeRecurring':
 
 				//ServiceName, CardId, Amount, CurrencyCode, OrderReference, SharedSecret
-
 			case 'CreateInvoice':
 			case 'CheckSsn':
 
@@ -167,7 +160,7 @@ class PayIQAPI
 			case 'PrepareSession':
 			default:
 
-				$raw_sting = $this->service_name . ($this->order->get_total() * 100) . $this->order->get_order_currency() . $this->get_order_ref() . $this->shared_secret;
+				$raw_sting = $this->service_name . ($this->get_order_totals_decimals()) . $this->order->get_order_currency() . $this->get_order_ref() . $this->shared_secret;
 
 				break;
 		}
@@ -340,6 +333,7 @@ class PayIQAPI
 				'UnitPrice'     => $this->format_price( ($item['line_total'] + $item['line_tax']) / $item['qty'] )
 			];
 
+
 		}
 
 		//TODO: Add support for custom fees
@@ -382,6 +376,19 @@ class PayIQAPI
 		return $order_items;
 	}
 
+	function get_order_totals_decimals(){
+
+		$order_items = $this->get_order_items();
+		$order_total = 0;
+		foreach($order_items as $order_item){
+
+			$item_price = $order_item['UnitPrice'] * $order_item['Quantity'];
+			$order_total += $item_price;
+		}
+
+		return $order_total;
+	}
+
 	function get_order_description() {
 
 		$items = $this->order->get_items();
@@ -399,31 +406,21 @@ class PayIQAPI
 	function get_transaction_settings( $options = [] ) {
 
 		$order_id = $this->order->id;
-		if(WC_Subscriptions_Order::order_contains_subscription( $order_id )){
-			$data = [
-				'AutoCapture'       => 'true',  //( isset( $options ) ? 'true' : 'false' ),
-				'CallbackUrl'       => trailingslashit( site_url( '/woocommerce/payiq-callback' ) ),
-				'CreateSubscription' => 'true',
-				'DirectPaymentBank' => '',
-				'FailureUrl'        => trailingslashit( site_url( '/woocommerce/payiq-failure' ) ),
-				//Allowed values: Card, Direct, NotSet
-				'PaymentMethod'     => 'NotSet',
-				'SuccessUrl'        => trailingslashit( site_url( '/woocommerce/payiq-success' ) ),
-			];
-		}
-		else{
-			$data = [
-				'AutoCapture'       => 'true',  //( isset( $options ) ? 'true' : 'false' ),
-				'CallbackUrl'       => trailingslashit( site_url( '/woocommerce/payiq-callback' ) ),
-				'CreateSubscription' => 'false',
-				'DirectPaymentBank' => '',
-				'FailureUrl'        => trailingslashit( site_url( '/woocommerce/payiq-failure' ) ),
-				//Allowed values: Card, Direct, NotSet
-				'PaymentMethod'     => 'NotSet',
-				'SuccessUrl'        => trailingslashit( site_url( '/woocommerce/payiq-success' ) ),
-			];
-		}
 
+		$data = [
+			'AutoCapture'       => 'true',  //( isset( $options ) ? 'true' : 'false' ),
+			'CallbackUrl'       => trailingslashit( site_url( '/woocommerce/payiq-callback' ) ),
+			'CreateSubscription' => 'false',
+			'DirectPaymentBank' => '',
+			'FailureUrl'        => trailingslashit( site_url( '/woocommerce/payiq-failure' ) ),
+			//Allowed values: Card, Direct, NotSet
+			'PaymentMethod'     => 'NotSet',
+			'SuccessUrl'        => trailingslashit( site_url( '/woocommerce/payiq-success' ) ),
+		];
+
+		if(wcs_order_contains_subscription( $this->order )){
+			$data['CreateSubscription'] = 'true';
+		}
 
 		return $data;
 	}
@@ -535,18 +532,6 @@ class PayIQAPI
 		return $data;
 	}
 
-/*	function get_subscription_id_from_order($order_woo) {
-		$order_id = $order_woo->id;
-		$sub_key = get_post_meta($order_id, '_payiq_subscription_id', true);
-		return $sub_key;
-	}
-
-	function get_amount_from_order($order_woo) {
-		$order_id = $order_woo->id;
-		$amount_to_charge = WC_Subscriptions_Order::get_price_per_period( $order_woo );
-		return $amount_to_charge;
-	}*/
-
 	function AuthorizeSubscription() {
 
 		$order_id = $this->order->id;
@@ -592,8 +577,6 @@ class PayIQAPI
 		$data = $this->get_xml_fields( $response, [
 			'Cards'
 		]);
-
-		//var_dump($data);
 
 		return $data;
 	}

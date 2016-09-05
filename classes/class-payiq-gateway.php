@@ -233,19 +233,6 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		$icon_html = '<img src="' . $icon_src . '" alt="PayIQ" style="max-width:' . $icon_width . 'px"/>';
 
-		/*
-		$icon_html .= sprintf( '<a href="%1$s" ' .
-				' class="about_paypal" ' .
-				' onclick="javascript:window.open(\'%1$s\',\'PayIQ\',\'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700\'); return false;" ' .
-				' title="' . esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) . '" ' .
-				' style="float: right;line-height: 52px; font-size: .83em;text-decoration: none;box-shadow: none;" ' .
-				'">' .
-			esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) .
-			'</a>',
-			esc_url( 'http://payiq.se/' )
-		);
-		*/
-
 		return apply_filters( 'wc_payiq_icon_html', $icon_html );
 	}
 
@@ -353,8 +340,6 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$api->setOrder( $order );
 
 		update_post_meta( $order->id, 'payiq_transaction_id', $transaction_id );
-
-		//update_post_meta( $this->order->id, '_transaction_id', true );
 
 		if (preg_match( '/[^a-z_\-0-9]/i', $transaction_id ) ) {
 			if ( $this->debug ) {
@@ -566,8 +551,6 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			$api_client = $this->get_api_client();
 
 			$api_client->setOrder( $order );
-
-			//update_post_meta( $order->id, 'payiq_transaction_id', $_GET['transactionid'] );
 
 			//Call upon GetTransactionDetails in class-payiq-api and get the subscription id from payiqs api
 			$payiq_subscription_id = $api_client->GetTransactionDetails( $transactionId );

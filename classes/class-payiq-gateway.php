@@ -58,8 +58,20 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		} else {
 			$this->debug = false;
 		}
-	}
 
+		//Register the support for the subscriptions
+		$this->supports = array(
+			'products',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change'
+		);
+
+	}
 
 	/**
 	 * @param  $order WooCommerce order object or ID
@@ -221,19 +233,6 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		$icon_html = '<img src="' . $icon_src . '" alt="PayIQ" style="max-width:' . $icon_width . 'px"/>';
 
-		/*
-		$icon_html .= sprintf( '<a href="%1$s" ' .
-				' class="about_paypal" ' .
-				' onclick="javascript:window.open(\'%1$s\',\'PayIQ\',\'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700\'); return false;" ' .
-				' title="' . esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) . '" ' .
-				' style="float: right;line-height: 52px; font-size: .83em;text-decoration: none;box-shadow: none;" ' .
-				'">' .
-			esc_attr__( 'Information about PayIQ', 'payiq-wc-gateway' ) .
-			'</a>',
-			esc_url( 'http://payiq.se/' )
-		);
-		*/
-
 		return apply_filters( 'wc_payiq_icon_html', $icon_html );
 	}
 
@@ -268,9 +267,13 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		// Remove cart
 		WC()->cart->empty_cart();
 
+		$order_id = $order->id;
+
+
 		$redirect_url = $this->get_payment_window_url( $order );
 
 		$this->set_default_order_meta( $order );
+
 
 		if ( ! empty( $redirect_url ) && strpos( 'secure.payiq.se', $redirect_url ) !== false ) {
 
@@ -320,6 +323,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		$redirect_url = $api->prepareSession( $prepare_session_data );
 
+
 		return $redirect_url;
 	}
 
@@ -335,7 +339,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		$api->setOrder( $order );
 
-		update_post_meta( $order->id, 'payiq_transaction_id', $_GET['transactionid'] );
+		update_post_meta( $order->id, 'payiq_transaction_id', $transaction_id );
 
 		if (preg_match( '/[^a-z_\-0-9]/i', $transaction_id ) ) {
 			if ( $this->debug ) {
@@ -344,16 +348,8 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			return false;
 		}
 
-		$client_ip = $this->get_client_ip();
 
-		if ( ! $client_ip ) {
-			if ( $this->debug ) {
-				$this->logger->add( 'payiq', 'Invalid IP: '.$client_ip.' (If you use a proxy you should add the IP to the allowed proxies field)' );
-			}
-			return false;
-		}
-
-		$data = $api->CaptureTransaction( $transaction_id, $client_ip );
+		$data = $api->CaptureTransaction( $transaction_id );
 
 		/*
          * Example response:
@@ -379,7 +375,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 				$this->logger->add( 'payiq', 'Transaction alread captured for order #'.$order->id.'.' );
 			}
 		}
-		elseif ( $data['SettledAmount'] != ($this->order->get_total() * 100) ) {
+		elseif ( $data['SettledAmount'] != ($order->get_total() * 100) ) {
 
 			if ( $this->is_debug() ) {
 				$this->logger->add( 'payiq', 'SettledAmount does not match order total for #'.$order->id.'.' );
@@ -475,7 +471,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 			'orderreference',
 			'authorizedamount',
 			'operationtype',
-			'currency',
+			//'currency',
 			'operationamount',
 			'settledamount',
 			'message',
@@ -490,6 +486,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 			if ( ! isset( $_GET[$required_field] ) ) {
 
+
 				$this->logger->add( 'payiq', 'Missing fields: ' . print_r( array_diff( $required_fields, array_keys( $_GET ) ), true ) );
 
 				return false;
@@ -503,10 +500,12 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 
 		if ( $checksum_valid !== true ) {
 
+
 			if ( ! isset( $_GET[$required_field] ) ) {
 
 				$this->logger->add( 'payiq', 'Raw string: ' . $checksum_valid['raw_sting'] );
 				$this->logger->add( 'payiq', 'Checksums: Generated: ' . $checksum_valid['generated'] . '  - Sent: ' . $post_data['checksum'] );
+
 
 				return false;
 			}
@@ -521,8 +520,8 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		var_dump( $this->is_debug() );
 		if ( $this->is_debug() ) {
 
-			$this->log->add( 'payiq', 'PayIQ callback URI: ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );
-			$this->log->add( 'payiq', 'PayIQ callback values: ' . print_r( $_GET, true ) );
+			$this->logger->add( 'payiq', 'PayIQ callback URI: ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] );
+			$this->logger->add( 'payiq', 'PayIQ callback values: ' . print_r( $_GET, true ) );
 		}
 
 		if ( $this->validate_callback( $order, $post_data ) !== true ) {
@@ -542,10 +541,32 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		add_post_meta( $order_id, '_payiq_transaction_id', $post_data['transactionid'], true );
 		add_post_meta( $order_id, '_transaction_id', $post_data['transactionid'], true );
 
+
+		//Kolla om order innehåller subscription
+		if(wcs_order_contains_subscription( $order )){
+
+			//transactionId
+			$transactionId = $post_data['transactionid'];
+
+			$api_client = $this->get_api_client();
+
+			$api_client->setOrder( $order );
+
+			//Call upon GetTransactionDetails in class-payiq-api and get the subscription id from payiqs api
+			$payiq_subscription_id = $api_client->GetTransactionDetails( $transactionId );
+
+
+
+			add_post_meta( $order_id, '_payiq_subscription_id',  $payiq_subscription_id['SubscriptionId'], true );
+
+
+		}
+
+
 		if ( $order->status == 'completed' || $order->status == 'processing' ) {
 
 			if ( $this->debug == 'yes' ) {
-				$this->log->add( 'payiq', 'Aborting, Order #' . $order->id . ' is already complete.' );
+				$this->logger->add( 'payiq', 'Aborting, Order #' . $order->id . ' is already complete.' );
 			}
 
 			return [
@@ -611,42 +632,17 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	function get_client_ip() {
 
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			$proxy_ip = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		}
-		else {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-
-		//Validate proxy IPs
-		$proxy_ips = array_map( function( $ip ) {
-			return trim( $ip );
-		}, explode( ',', $this->proxy_ips ) );
-
-		if ( in_array( $proxy_ip, $proxy_ips ) ) {
-			return $proxy_ip;
-		}
-
-		// Not valid
-		return false;
-	}
 
 
 	/**
 	 * Called on PayIQ callback to finalize the payment
 	 */
 	function payment_complete() {
-
+/*
 		print_r( $_REQUEST );
 
-		die();
+		die();*/
 
 		$order_id = 0;
 
@@ -658,5 +654,50 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		// Return to Thank you page if this is a buyer-return-to-shop callback
 		wp_redirect( $redirect_url );
 		exit;
+	}
+
+	/**
+	 * Process subscription payments to the billing periods ( triggered when billing period is fulfilled)
+	 */
+	function scheduled_subscription_payment( $order_total, $order ) {
+
+		$charge = $this->process_subscription_payment( $order, $order_total );
+
+		if ( is_wp_error( $charge ) ) {
+			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $order, '' );
+		} else {
+			WC_Subscriptions_Manager::process_subscription_payments_on_order( $order );
+		}
+
+	}
+
+	/**
+	 * Process the subscription payment and return the result of the payment where success or not
+	 *
+	 * @access      public
+	 * @param       int $amount
+	 * @return      array
+	 */
+	public function process_subscription_payment(  $order, $amount_to_charge ) {
+
+		//get instance
+		$api_client = $this->get_api_client();
+		$api_client->setOrder($order);
+
+		// AuthorizeSubscription()
+		$response = $api_client->AuthorizeSubscription();
+
+		//Get transactionId from response
+		$transaction_id = $response['TransactionId'];
+
+		//capture_transaction
+		$is_captured = $this->capture_transaction($order, $transaction_id);
+
+		if($is_captured){
+			$this->payment_captured($order);
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -96,7 +96,6 @@ class PayIQAPI
 	}
 
 	function getChecksum( $type = 'PrepareSession' ) {
-
 		if ( ! $this->order ) {
 
 			return false;
@@ -105,12 +104,27 @@ class PayIQAPI
 		switch ( $type ) {
 
 			case 'CaptureTransaction':
+
+				//ServiceName, TransactionId, SharedSecret
+				$transaction_id = get_post_meta( $this->order->id, 'payiq_transaction_id', true );
+
+				$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
+				break;
+
 			case 'ReverseTransaction':
 			case 'GetTransactionLog':
 			case 'GetTransactionDetails':
+
+				//ServiceName, TransactionId, SharedSecret
+			$transaction_id = get_post_meta( $this->order->id, '_transaction_id', true );
+
+			$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
+				break;
+
 			case 'CreditInvoice':
 			case 'ActivateInvoice':
 
+				//ServiceName, TransactionId, SharedSecret
 				$transaction_id = get_post_meta( $this->order->id, 'payiq_transaction_id', true );
 
 				$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
@@ -119,9 +133,25 @@ class PayIQAPI
 
 			case 'RefundTransaction':
 			case 'AuthorizeSubscription':
+
+				//ServiceName, SubscriptionId, Amount, CurrencyCode, OrderReference, SharedSecret
+				$subscription_id = get_post_meta( $this->order->id, '_payiq_subscription_id', true );
+				$currency = get_post_meta( $this->order->id, '_order_currency', true );
+
+				$raw_sting = $this->service_name . $subscription_id . ($this->get_order_totals_decimals())  . $currency . $this->get_order_ref() . $this->shared_secret;
+
+				break;
+
 			case 'GetSavedCards':
+
+				//ServiceName, CustomerId, SharedSecret
+				$raw_sting = $this->service_name . $this->get_customer_ref() . $this->shared_secret;
+				break;
+
 			case 'DeleteSavedCard':
 			case 'AuthorizeRecurring':
+
+				//ServiceName, CardId, Amount, CurrencyCode, OrderReference, SharedSecret
 			case 'CreateInvoice':
 			case 'CheckSsn':
 
@@ -165,6 +195,8 @@ class PayIQAPI
 		if ( $generated_checksum == $checksum ) {
 			return true;
 		}
+
+
 
 		return [
 			'generated' => $generated_checksum,
@@ -239,6 +271,40 @@ class PayIQAPI
 		return $this->get_soap_string( 'CustomerReference', 'customer_' . $customer_id );
 	}
 
+	/**
+	 * @return bool
+	 */
+	static function get_client_ip() {
+
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			$proxy_ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$proxy_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		else {
+			return $_SERVER['REMOTE_ADDR'];
+		}
+
+		//Validate proxy IPs
+		$proxy_ips = array_map( function( $ip ) {
+			return trim( $ip );
+		}, explode( ',', PayIQ::get_gateway_options('proxy_ips') ) );
+
+		if ( in_array( $proxy_ip, $proxy_ips ) ) {
+			return $proxy_ip;
+		}
+
+
+			if ( PayIQ::get_gateway_options('debug') ) {
+				$logger = new WC_Logger();
+				$logger->add( 'payiq', 'Invalid IP: '.$proxy_ip.' (If you use a proxy you should add the IP to the allowed proxies field)' );
+			}
+
+
+		// Not valid
+		return false;
+	}
+
 	function get_order_items() {
 
 		$items = $this->order->get_items();
@@ -266,6 +332,7 @@ class PayIQAPI
 				'Quantity'      => $item['qty'],
 				'UnitPrice'     => $this->format_price( ($item['line_total'] + $item['line_tax']) / $item['qty'] )
 			];
+
 
 		}
 
@@ -338,6 +405,8 @@ class PayIQAPI
 
 	function get_transaction_settings( $options = [] ) {
 
+		$order_id = $this->order->id;
+
 		$data = [
 			'AutoCapture'       => 'true',  //( isset( $options ) ? 'true' : 'false' ),
 			'CallbackUrl'       => trailingslashit( site_url( '/woocommerce/payiq-callback' ) ),
@@ -348,6 +417,10 @@ class PayIQAPI
 			'PaymentMethod'     => 'NotSet',
 			'SuccessUrl'        => trailingslashit( site_url( '/woocommerce/payiq-success' ) ),
 		];
+
+		if(wcs_order_contains_subscription( $this->order )){
+			$data['CreateSubscription'] = 'true';
+		}
 
 		return $data;
 	}
@@ -405,7 +478,6 @@ class PayIQAPI
 
 	}
 
-
 	function prepareSession( $options = [] ) {
 
 		$data = [
@@ -414,7 +486,6 @@ class PayIQAPI
 			'Language' => 'sv',
 			'OrderInfo' => $this->get_order_info(),
 			'ServiceName' => $this->service_name,
-			//'TransactionSettings' => new TransactionSettings(),
 			'TransactionSettings' => $this->get_transaction_settings( $options ),
 		];
 
@@ -435,17 +506,112 @@ class PayIQAPI
 		return $redirect_url;
 	}
 
+	function AuthorizeRecurring() {
+
+		$data = [
+			'ServiceName' => $this->service_name,
+			'Checksum' => $this->getChecksum( 'AuthorizeRecurring' ),
+			'CardId' => '',
+			'Currency' => $this->order->get_order_currency(),
+			'Amount' => '',
+			'OrderReference' => $this->get_order_ref(),
+			'CustomerReference' => $this->get_customer_ref(),
+			//'TransactionSettings' => new TransactionSettings(),
+			'ClientIpAddress' =>  self::get_client_ip(),
+
+		];
+
+		$xml = $this->get_request_xml( 'AuthorizeRecurring', $data );
+
+		$response = $this->client->__myDoRequest( $xml, 'AuthorizeRecurring' );
+
+		$data = $this->get_xml_fields( $response, [
+			'Succeeded', 'ErrorCode', 'TransactionId', 'SubscriptionId'
+		]);
+
+		return $data;
+	}
+
+	function AuthorizeSubscription() {
+
+		$order_id = $this->order->id;
+		$subscription_id = get_post_meta($order_id, '_payiq_subscription_id', true);
+		$currency = get_post_meta( $order_id, '_order_currency', true );
+		$amount_to_charge = $this->order->get_total();
+		$amount_to_charge = $amount_to_charge * 100;
+
+		$data = [
+			'ServiceName' => $this->service_name,
+			'Checksum' => $this->getChecksum( 'AuthorizeSubscription' ),
+			'SubscriptionId' => $subscription_id,
+			'Amount' => $amount_to_charge,
+			'Currency' => $currency,
+			'OrderReference' => $this->get_order_ref(),
+			'ClientIpAddress' =>  self::get_client_ip(),
+		];
+
+
+		$xml = $this->get_request_xml( 'AuthorizeSubscription', $data );
+
+		$response = $this->client->__myDoRequest( $xml, 'AuthorizeSubscription' );
+
+		$data = $this->get_xml_fields( $response, [
+			'TransactionId'
+		]);
+
+		return $data;
+	}
+
+	function GetSavedCards() {
+
+		$data = [
+			'ServiceName' => $this->service_name,
+			'Checksum' => $this->getChecksum( 'GetSavedCards' ),
+			'CustomerReference' => $this->get_customer_ref(),
+		];
+
+		$xml = $this->get_request_xml( 'AuthorizeSubscription', $data );
+
+		$response = $this->client->__myDoRequest( $xml, 'AuthorizeSubscription' );
+
+		$data = $this->get_xml_fields( $response, [
+			'Cards'
+		]);
+
+		return $data;
+	}
+
+
+	function GetTransactionDetails( $TransactionId ) {
+		$data = [
+			'Checksum'          => $this->getChecksum( 'GetTransactionDetails' ),
+			'ServiceName'       => $this->service_name,
+			'TransactionId'     => $TransactionId,
+		];
+
+		$xml = $this->get_request_xml( 'GetTransactionDetails', $data );
+
+		$response = $this->client->__myDoRequest( $xml, 'GetTransactionDetails' );
+
+		$data = $this->get_xml_fields( $response, [
+			'SubscriptionId'
+		]);
+
+		return $data;
+	}
 
 	function CaptureTransaction( $TransactionId ) {
 
 		$data = [
 			'Checksum'          => $this->getChecksum( 'CaptureTransaction' ),
-			'ClientIpAddress'   => $this->get_customer_ref(),
+			'ClientIpAddress'   => self::get_client_ip(),
 			'ServiceName'       => $this->service_name,
 			'TransactionId'     => $TransactionId,
+
 		];
 
 		$xml = $this->get_request_xml( 'CaptureTransaction', $data );
+
 
 		$response = $this->client->__myDoRequest( $xml, 'CaptureTransaction' );
 
@@ -454,6 +620,7 @@ class PayIQAPI
 		]);
 
 		return $data;
+
 	}
 
 

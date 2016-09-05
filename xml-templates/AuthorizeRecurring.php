@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" 
  		    xmlns:p="http://schemas.wiredge.se/payment/api/v2/objects" 
 		    xmlns:a="http://schemas.wiredge.se/payment/api/v2">

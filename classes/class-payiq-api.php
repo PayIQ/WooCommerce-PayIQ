@@ -371,8 +371,6 @@ class PayIQAPI
 			];
 		}
 
-		print_r( $order_items );
-
 		return $order_items;
 	}
 

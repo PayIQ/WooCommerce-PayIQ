@@ -3,7 +3,7 @@ Contributors: pekz0r, payiq, angrycreative, kylegard
 Tags: PayIQ, WooCommerce, Gateway, Payments, WooCommmerce Gateway, PSP
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ No. All the card information is handled in a hosted payment window and will not 
 
 == Changelog ==
 
+= 1.1.1 =
+* Bugfixes.
+
 = 1.1.0 =
 * Added support for subscription payments. 
 
@@ -42,12 +45,15 @@ No. All the card information is handled in a hosted payment window and will not 
 * Fix issues where order total is rounded in error when calculating the checksum.
 
 = 1.0.1 =
-* Bugfixes and PHP version 5.3 compatibility
+* Bugfixes and PHP version 5.3 compatibility.
 
 = 1.0.0 =
-* First release
+* First release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+* Bugfixes. Please update.
 
 = 1.1.0 =
 * New feature: Subscription payments. 
@@ -59,4 +65,4 @@ No. All the card information is handled in a hosted payment window and will not 
 * Bugfixes. Please update.
 
 = 1.0.0 =
-First release
+* First release.

@@ -7,6 +7,17 @@ class PayIQ {
 	function __construct() {
 
 		add_action('init', array( $this, 'init' ));
+
+		$this->supports = array(
+			'products',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change'
+		);
 	}
 
 	function log_callback( $type = '' ) {
@@ -42,11 +53,11 @@ class PayIQ {
 				case 'failure' :
 
 					$this->process_failed( );
-
 					break;
 				case 'success' :
 
 					$this->process_success( );
+
 
 					break;
 				case 'callback' :
@@ -57,7 +68,7 @@ class PayIQ {
 			}
 
 		}
-
+		//die();
 		// Add custom action links
 		add_filter( 'plugin_action_links_' . WC_PAYIQ_PLUGIN_BASENAME, [ $this, 'add_action_links' ] );
 
@@ -68,6 +79,9 @@ class PayIQ {
 		add_action( 'woocommerce_order_status_completed', [ $this, 'capture_transaction' ] );
 
 		add_action( 'woocommerce_admin_order_data_after_order_details', [ $this, 'display_order_meta' ] );
+
+		add_action('woocommerce_scheduled_subscription_payment_payiq', [ $this, 'trigger_subscription_payments' ], 10, 2);
+
 	}
 
 	function display_order_meta() {
@@ -131,7 +145,6 @@ class PayIQ {
 			$order_id = $_GET['orderreference'];
 		}
 
-		//$order_id = intval( str_replace( 'order', '', $order_id ) );
 		$order_id = intval( $order_id );
 
 		if ( $order_id > 0 ) {
@@ -151,7 +164,6 @@ class PayIQ {
 			return;
 		}
 
-		//$order->update_status('processing', __('Order paid with PayIQ', 'payiq-wc-gateway'));
 		$order->payment_complete();
 
 		$success_url = $order->get_checkout_order_received_url();
@@ -183,12 +195,55 @@ class PayIQ {
 			return;
 		}
 
+
 		$gateway = new WC_Gateway_PayIQ();
 
 		//$gateway->validate_callback( $order, stripslashes_deep( $_GET ) );
 		$response = $gateway->process_callback( $order, stripslashes_deep( $_GET ) );
 
+		if($response['status'] == 'ok')
+		{
+			echo 'OK';
+			die();
+		}
 		wp_send_json( $response );
+	}
+
+	function trigger_subscription_payments( $order_total, $order ) {
+		global $woocommerce;
+
+		if($order_total == 0){
+			$order_total = get_post_meta($order->id, '_order_total',  true );
+		}
+
+		$order->update_status( 'pending', __( 'Awaiting PayIQ payment', 'payiq-wc-gateway' ) );
+
+		//Add order to the log list under woocommerce->payiq
+		$logger = new WC_Logger();
+		$logger->add( 'payiq', 'Invalid IP: '.print_r($order, true) . 'trigger_sub_payment');
+		$logger->add( 'payiq', 'ORDER ID: '. print_r($order->id, true) . 'trigger_sub_payment');
+
+		//Take out the subscription id from the order
+		$sub_id = get_post_meta($order->id, '_subscription_renewal',  true );
+
+		//take out the parent id from the subscription to get the parent order
+		$sub_id_parent = wp_get_post_parent_id( $sub_id );
+
+		//Get the payiq subscription id from parent order
+		$payiq_sub_id = get_post_meta($sub_id_parent, '_payiq_subscription_id',  true );
+
+		//Add the payiq subscriptionid to postmeta
+		add_post_meta($order->id, '_payiq_subscription_id', $payiq_sub_id,  true);
+
+		if( $order === false )
+		{
+			return;
+		}
+		$gateway = new WC_Gateway_PayIQ();
+
+		//Call on schedule subscription payment
+		$gateway->scheduled_subscription_payment( $order_total, $order);
+
 	}
 
 	/**

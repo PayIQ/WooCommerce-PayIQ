@@ -371,8 +371,6 @@ class PayIQAPI
 			];
 		}
 
-		print_r( $order_items );
-
 		return $order_items;
 	}
 
@@ -418,7 +416,7 @@ class PayIQAPI
 			'SuccessUrl'        => trailingslashit( site_url( '/woocommerce/payiq-success' ) ),
 		];
 
-		if(wcs_order_contains_subscription( $this->order )){
+		if(function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription( $this->order )){
 			$data['CreateSubscription'] = 'true';
 		}
 

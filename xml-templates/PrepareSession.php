@@ -20,6 +20,7 @@
                     <a:OrderReference><?php echo $data['OrderInfo']['OrderReference']; ?></a:OrderReference>
                 </a:OrderInfo>
                 <a:ServiceName><?php echo $data['ServiceName']; ?></a:ServiceName>
+                <a:Timestamp><?php echo $data['Timestamp']; ?></a:Timestamp>
                 <a:TransactionSettings>
                     <a:AutoCapture><?php echo $data['TransactionSettings']['AutoCapture']; ?></a:AutoCapture>
                     <a:CallbackUrl><?php echo $data['TransactionSettings']['CallbackUrl']; ?></a:CallbackUrl>

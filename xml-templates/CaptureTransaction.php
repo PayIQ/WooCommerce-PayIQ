@@ -5,6 +5,7 @@
                 <a:Checksum><?php echo $data['Checksum']; ?></a:Checksum>
                 <a:ClientIpAddress><?php echo $data['ClientIpAddress']; ?></a:ClientIpAddress>
                 <a:ServiceName><?php echo $data['ServiceName']; ?></a:ServiceName>
+                <a:Timestamp><?php echo $data['Timestamp']; ?></a:Timestamp>
                 <a:TransactionId><?php echo $data['TransactionId']; ?></a:TransactionId>
             </data>
         </CaptureTransaction>

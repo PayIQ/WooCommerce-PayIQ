@@ -11,6 +11,7 @@
         <p:OrderReference><?php echo $data['OrderReference']; ?></p:OrderReference>
         <p:ServiceName><?php echo $data['ServiceName']; ?></p:ServiceName>
         <p:SubscriptionId><?php echo $data['SubscriptionId']; ?></p:SubscriptionId>
+        <p:Timestamp><?php echo $data['Timestamp']; ?></p:Timestamp>
       </a:data>
     </a:AuthorizeSubscription>
   </s:Body>

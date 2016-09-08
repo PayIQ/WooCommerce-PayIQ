@@ -105,53 +105,53 @@ class PayIQAPI
 
 			case 'CaptureTransaction':
 
-				//ServiceName, TransactionId, SharedSecret
+				//ServiceName, TransactionId, Timestamp,  SharedSecret
 				$transaction_id = get_post_meta( $this->order->id, 'payiq_transaction_id', true );
 
-				$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
+				$raw_sting = $this->service_name . $transaction_id . $this->get_timestamp();
 				break;
 
 			case 'ReverseTransaction':
 			case 'GetTransactionLog':
 			case 'GetTransactionDetails':
 
-				//ServiceName, TransactionId, SharedSecret
+				//ServiceName, TransactionId, Timestamp,  SharedSecret
 			$transaction_id = get_post_meta( $this->order->id, '_transaction_id', true );
 
-			$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
+			$raw_sting = $this->service_name . $transaction_id . $this->get_timestamp();
 				break;
 
 			case 'CreditInvoice':
 			case 'ActivateInvoice':
 
-				//ServiceName, TransactionId, SharedSecret
+				//ServiceName, TransactionId, Timestamp,  SharedSecret
 				$transaction_id = get_post_meta( $this->order->id, 'payiq_transaction_id', true );
 
-				$raw_sting = $this->service_name . $transaction_id . $this->shared_secret;
+				$raw_sting = $this->service_name . $transaction_id . $this->get_timestamp();
 
 				break;
 
 			case 'RefundTransaction':
 			case 'AuthorizeSubscription':
 
-				//ServiceName, SubscriptionId, Amount, CurrencyCode, OrderReference, SharedSecret
+				//ServiceName, SubscriptionId, Amount, CurrencyCode, OrderReference, Timestamp, SharedSecret
 				$subscription_id = get_post_meta( $this->order->id, '_payiq_subscription_id', true );
 				$currency = get_post_meta( $this->order->id, '_order_currency', true );
 
-				$raw_sting = $this->service_name . $subscription_id . ($this->get_order_totals_decimals())  . $currency . $this->get_order_ref() . $this->shared_secret;
+				$raw_sting = $this->service_name . $subscription_id . ($this->get_order_totals_decimals())  . $currency . $this->get_order_ref() . $this->get_timestamp();
 
 				break;
 
 			case 'GetSavedCards':
 
-				//ServiceName, CustomerId, SharedSecret
-				$raw_sting = $this->service_name . $this->get_customer_ref() . $this->shared_secret;
+				//ServiceName, CustomerId, Timestamp,  SharedSecret
+				$raw_sting = $this->service_name . $this->get_customer_ref() . $this->get_timestamp();
 				break;
 
 			case 'DeleteSavedCard':
 			case 'AuthorizeRecurring':
 
-				//ServiceName, CardId, Amount, CurrencyCode, OrderReference, SharedSecret
+				//ServiceName, CardId, Amount, CurrencyCode, OrderReference, Timestamp,  SharedSecret
 			case 'CreateInvoice':
 			case 'CheckSsn':
 
@@ -160,7 +160,8 @@ class PayIQAPI
 			case 'PrepareSession':
 			default:
 
-				$raw_sting = $this->service_name . ($this->get_order_totals_decimals()) . $this->order->get_order_currency() . $this->get_order_ref() . $this->shared_secret;
+				//ServiceName, Amount, CurrencyCode, OrderReference, Timestamp, SharedSecret
+				$raw_sting = $this->service_name . ($this->get_order_totals_decimals()) . $this->order->get_order_currency() . $this->get_order_ref() . $this->get_timestamp();
 
 				break;
 		}
@@ -174,9 +175,9 @@ class PayIQAPI
 		 * SharedSecret = “ncVFrw1H”
 		 */
 
-		$str = strtolower( $raw_sting );
+		$str = strtolower( $raw_sting ) .  $this->shared_secret;
 
-		return md5( $str );
+		return hash('sha512',  $str );
 	}
 
 	function validateChecksum( $post_data, $checksum ) {
@@ -190,7 +191,7 @@ class PayIQAPI
 			$post_data['currency'] .
 			$this->shared_secret;
 
-		$generated_checksum = md5( strtolower( $raw_sting ) );
+		$generated_checksum = hash('sha512',  strtolower( $raw_sting ) );
 
 		if ( $generated_checksum == $checksum ) {
 			return true;
@@ -202,6 +203,11 @@ class PayIQAPI
 			'generated' => $generated_checksum,
 			'raw_sting' => $raw_sting
 		];
+	}
+
+	function get_timestamp(){
+		$timestamp = gmdate('Y-m-d') . 'T' . gmdate('h:i:s') . 'Z' ;
+		return $timestamp;
 	}
 
 	function get_service_url( $endpoint ) {
@@ -484,6 +490,7 @@ class PayIQAPI
 			'Language' => 'sv',
 			'OrderInfo' => $this->get_order_info(),
 			'ServiceName' => $this->service_name,
+			'Timestamp' => $this->get_timestamp(),
 			'TransactionSettings' => $this->get_transaction_settings( $options ),
 		];
 
@@ -516,6 +523,7 @@ class PayIQAPI
 			'CustomerReference' => $this->get_customer_ref(),
 			//'TransactionSettings' => new TransactionSettings(),
 			'ClientIpAddress' =>  self::get_client_ip(),
+			'Timestamp' => $this->get_timestamp(),
 
 		];
 
@@ -546,6 +554,7 @@ class PayIQAPI
 			'Currency' => $currency,
 			'OrderReference' => $this->get_order_ref(),
 			'ClientIpAddress' =>  self::get_client_ip(),
+			'Timestamp' => $this->get_timestamp(),
 		];
 
 
@@ -563,9 +572,10 @@ class PayIQAPI
 	function GetSavedCards() {
 
 		$data = [
-			'ServiceName' => $this->service_name,
-			'Checksum' => $this->getChecksum( 'GetSavedCards' ),
+			'ServiceName' 		=> $this->service_name,
+			'Checksum'			=> $this->getChecksum( 'GetSavedCards' ),
 			'CustomerReference' => $this->get_customer_ref(),
+			'Timestamp' 		=> $this->get_timestamp(),
 		];
 
 		$xml = $this->get_request_xml( 'AuthorizeSubscription', $data );
@@ -585,6 +595,7 @@ class PayIQAPI
 			'Checksum'          => $this->getChecksum( 'GetTransactionDetails' ),
 			'ServiceName'       => $this->service_name,
 			'TransactionId'     => $TransactionId,
+			'Timestamp' 		=> $this->get_timestamp(),
 		];
 
 		$xml = $this->get_request_xml( 'GetTransactionDetails', $data );
@@ -605,6 +616,7 @@ class PayIQAPI
 			'ClientIpAddress'   => self::get_client_ip(),
 			'ServiceName'       => $this->service_name,
 			'TransactionId'     => $TransactionId,
+			'Timestamp' 		=> $this->get_timestamp(),
 
 		];
 

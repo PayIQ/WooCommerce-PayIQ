@@ -16,6 +16,7 @@
         <p:OrderCategory></p:OrderCategory>
         <p:OrderReference><?php echo $data['OrderReference']; ?></p:OrderReference>
         <p:ServiceName><?php echo $data['ServiceName']; ?></p:ServiceName>
+        <a:Timestamp><?php echo $data['Timestamp']; ?></a:Timestamp>
       </a:data>
     </a:AuthorizeRecurring>
   </s:Body>

@@ -1,0 +1,270 @@
+# Copyright (C) 2016 WooCommerce PayIQ Gateway
+# This file is distributed under the same license as the WooCommerce PayIQ Gateway package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce PayIQ Gateway 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payiq-wc-gateway\n"
+"POT-Creation-Date: 2016-05-04 09:10:47+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: classes/class-payiq-api.php:327
+msgid "Order #%s."
+msgstr "Order #%s."
+
+#: classes/class-payiq-gateway.php:26 classes/class-payiq-gateway.php:27
+#: classes/class-payiq-gateway.php:100 classes/class-payiq.php:84
+msgid "PayIQ"
+msgstr "PayIQ"
+
+#: classes/class-payiq-gateway.php:29
+msgid "Proceed to PayIQ"
+msgstr "Fortsätt till PayIQ"
+
+#: classes/class-payiq-gateway.php:91
+msgid "Enable/Disable"
+msgstr "Aktivera/Inaktivera"
+
+#: classes/class-payiq-gateway.php:93
+msgid "Enable PayIQ payment gateway"
+msgstr "Aktivera PayIQ betalningsalternativ"
+
+#: classes/class-payiq-gateway.php:97
+msgid "Title"
+msgstr "Titel"
+
+#: classes/class-payiq-gateway.php:99
+msgid ""
+"This is the title of the payment option that the user sees during checkout, "
+"in emails and order history."
+msgstr ""
+"Detta är titeln av betalningsalternativet som användaren ser vid utcheckningen, "
+"i mail och i orderhistoriken."
+
+#: classes/class-payiq-gateway.php:104
+msgid "Description"
+msgstr "Beskrivning"
+
+#: classes/class-payiq-gateway.php:106
+msgid ""
+"This is the description of the payment option that the user sees during "
+"checkout."
+msgstr ""
+"Detta är beskrivningen av betalningsalternativet som användaren ser vid "
+ "utcheckningen."
+
+#: classes/class-payiq-gateway.php:107
+msgid "Pay via PayIQ using credit card or bank transfer."
+msgstr "Betala med PayIQ genom att använda kort eller banköverföring"
+
+#: classes/class-payiq-gateway.php:110
+msgid "Alternative payment icon"
+msgstr "Alternativ betalningsikon"
+
+#: classes/class-payiq-gateway.php:112
+msgid ""
+"Add the URL to an alternative payment icon that the user sees during "
+"checkout. Leave blank to use the default image. Alternative payment method "
+"logos can be found <a href=\"%s\" target=\"_blank\">here</a>."
+msgstr ""
+"Lägg till URLen till den alternativa betalningsikonen som användaren ser vid "
+"utcheckningen. Lämna tomt för att använda standardikonen. Alternativa "
+"logotyper kan hittas på <a href=\"%s\" target=\"_blank\">here</a>."
+
+#: classes/class-payiq-gateway.php:116
+msgid "Icon width"
+msgstr "Ikonbredd"
+
+#: classes/class-payiq-gateway.php:118
+msgid "The width of the Alternative payment icon."
+msgstr "Bredden av den alternativa betalningsikonen."
+
+#: classes/class-payiq-gateway.php:122
+msgid "Language"
+msgstr "Språk"
+
+#: classes/class-payiq-gateway.php:125
+msgid "English"
+msgstr "Engelska"
+
+#: classes/class-payiq-gateway.php:126
+msgid "Finnish"
+msgstr "Finska"
+
+#: classes/class-payiq-gateway.php:127
+msgid "Norwegian"
+msgstr "Norska"
+
+#: classes/class-payiq-gateway.php:128
+msgid "Swedish"
+msgstr "Svenska"
+
+#: classes/class-payiq-gateway.php:130
+msgid ""
+"Set the language in which the page will be opened when the customer is "
+"redirected to PayIQ."
+msgstr ""
+"Sätt språk i fönstret som öppnas när kund "
+ "dirigeras till PayIQ."
+
+#: classes/class-payiq-gateway.php:147
+msgid "Transaction capture"
+msgstr "Transaktion mottagen"
+
+#: classes/class-payiq-gateway.php:150
+msgid "On Purchase"
+msgstr "Vid Köp"
+
+#: classes/class-payiq-gateway.php:151
+msgid "On order completion"
+msgstr "Vid Fullbordad Order"
+
+#: classes/class-payiq-gateway.php:152
+msgid "No"
+msgstr "Nej"
+
+#: classes/class-payiq-gateway.php:154
+msgid ""
+"\"On purchase\" means that the money in transferred from the customers "
+"account immediately. With \"On order completion\" the money is transferred "
+"when the order is marked as completed. With \"No\" the transfer needs to be "
+"triggered manually from the PayIQ admin."
+msgstr ""
+"\"Vid köp\" betyder att pengarna kommer att överföras från kundernas konto omedelbart."
+" Med \"Vid Fullbordad Order\" komer pengarna överföras från kunden "
+"då ordern är markerad som fullbordad. Med \"Ingen\" innebär det att överförningen kommer "
+"att sättas igång manuellt från PayIQs admin."
+
+#: classes/class-payiq-gateway.php:158
+msgid "Service name"
+msgstr "Servicenamn"
+
+#: classes/class-payiq-gateway.php:160
+msgid "Unique id of your integration. You get this from PayIQ."
+msgstr "Ditt unika id för din integration. Detta får du från PayIQ."
+
+#: classes/class-payiq-gateway.php:164
+msgid "Shared secret"
+msgstr "Delad hemlighet"
+
+#: classes/class-payiq-gateway.php:166
+msgid "Unique key for your integration. You get this from PayIQ."
+msgstr "Ditt unika id för din integration. Detta får du från PayIQ."
+
+#: classes/class-payiq-gateway.php:170
+msgid "Proxy IP-addresses"
+msgstr "Proxy IP-adress"
+
+#: classes/class-payiq-gateway.php:172
+msgid ""
+"If you are using a proxy such as Varnish or Nginx(as a proxy), we need to "
+"validate the client IPs for security reasons. Enter all proxy IPs here "
+"separated by comma."
+msgstr ""
+"Om du använder en proxy så som Varnish eller Nginx(som en proxy), kommer vi behöva "
+"bekräfta klientens IP för säkerhetsskäl. Skriv in alla proxy IPs här "
+"separerade med kommatecken."
+
+#: classes/class-payiq-gateway.php:184
+msgid "Debug"
+msgstr "Debug"
+
+#: classes/class-payiq-gateway.php:186
+msgid "Enable logging (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)"
+msgstr "Aktivera loggning (<code>wp-content/uploads/wc-logs/payiq-*.log</code>)"
+
+#: classes/class-payiq-gateway.php:247
+msgid "Awaiting PayIQ payment"
+msgstr "Inväntar PayIQ betalning"
+
+#: classes/class-payiq-gateway.php:392
+msgid "Order cancelled by customer."
+msgstr "Order avbruten av kund."
+
+#: classes/class-payiq-gateway.php:395
+msgid "Your order was cancelled."
+msgstr "Din order blev avbruten"
+
+#: classes/class-payiq-gateway.php:399
+msgid ""
+"Your order is not pending payment and could not be cancelled. If you think "
+"this is wrong, please contact us for assistance."
+msgstr ""
+"Den order är inte en inväntande betalning och kunde inte avbrytas. Om du tycker "
+"att detta är fel, var vänlig att kontakta oss för assistans."
+
+#: classes/class-payiq-gateway.php:403
+msgid "Invalid order."
+msgstr "Ogiltig order"
+
+#: classes/class-payiq-gateway.php:510
+msgid ""
+"Aborting, captured amount does not equal order amount for order #%d. Please "
+"check this order manually."
+msgstr ""
+"Avrbyter, det inkommande beloppet motsvarar inte beloppet för order #%d. Var vänlig "
+"och kontrollera denna order manuellt."
+
+#: classes/class-payiq-gateway.php:541
+msgid "PayIQ transaction authorized."
+msgstr "PayIQ transaktionen godkändes"
+
+#: classes/class-payiq-gateway.php:550
+msgid "PayIQ transaction captured."
+msgstr "PayIQ transaktionen fångades"
+
+#: classes/class-payiq.php:55
+msgid "Order reference"
+msgstr "Orderreferens"
+
+#: classes/class-payiq.php:56
+msgid "Transaction ID"
+msgstr "Transaktionsid"
+
+#: classes/class-payiq.php:57
+msgid "Payment method"
+msgstr "Betalningsmetod"
+
+#: classes/class-payiq.php:58
+msgid "Bank"
+msgstr "Bank"
+
+#: classes/class-payiq.php:59
+msgid "Authorized"
+msgstr "Godkänd"
+
+#: classes/class-payiq.php:60
+msgid "Captured"
+msgstr "Fångad"
+
+#: classes/class-payiq.php:90
+msgid "Settings"
+msgstr "Inställningar"
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce PayIQ Gateway"
+msgstr "WooCommerce PayIQ Gateway"
+
+#. Plugin URI of the plugin/theme
+msgid "http://woocommerce.com"
+msgstr "http://woocommerce.com"
+
+#. Description of the plugin/theme
+msgid ""
+"Provides a <a href=\"http://payiq.se/\" target=\"_blank\">PayIQ</a> gateway "
+"for WooCommerce."
+msgstr ""
+"Förser en <a href=\"http://payiq.se/\" target=\"_blank\">PayIQ</a> inkörsport "
+"för WooCommerce."
+
+#. Author of the plugin/theme
+msgid "AngryCreative"
+msgstr "AngryCreative"
+
+#. Author URI of the plugin/theme
+msgid "http://angrycreative.se"
+msgstr "http://angrycreative.se"

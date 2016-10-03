@@ -206,7 +206,7 @@ class PayIQAPI
 	}
 
 	function get_timestamp(){
-		$timestamp = gmdate('Y-m-d') . 'T' . gmdate('h:i:s') . 'Z' ;
+		$timestamp = gmdate('Y-m-d') . 'T' . gmdate('H:i:s') . 'Z' ;
 		return $timestamp;
 	}
 

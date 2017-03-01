@@ -12,6 +12,8 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 	protected $service_name;
 	protected $shared_secret;
 	protected $testmode;
+    protected $testmode_service_name;
+    protected $testmode_shared_secret;
 	protected $debug;
 
 	protected $api_client = null;
@@ -48,7 +50,10 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$this->shared_secret            = ( isset( $this->settings['shared_secret'] ) ) ? $this->settings['shared_secret'] : '';
 
 		$this->testmode                 = ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
-		$this->debug                    = ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : 'no';
+        $this->testmode_service_name    = ( isset( $this->settings['testmode_service_name'] ) ) ? $this->settings['testmode_service_name'] : '';
+        $this->testmode_shared_secret   = ( isset( $this->settings['testmode_shared_secret'] ) ) ? $this->settings['testmode_shared_secret'] : '';
+
+        $this->debug                    = ( isset( $this->settings['debug'] ) ) ? $this->settings['debug'] : 'no';
 
 		// Reqister hook for saving admin options
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] );
@@ -186,14 +191,24 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 				'description'   => __( 'If you are using a proxy such as Varnish or Nginx(as a proxy), we need to validate the client IPs for security reasons. Enter all proxy IPs here separated by comma.', 'payiq-wc-gateway' ),
 				'default'       => ''
 			],
-			/*
-            'testmode'                 => array(
+            'testmode'    => array(
                 'title'   => __( 'Test Mode', 'payiq-wc-gateway' ),
                 'type'    => 'checkbox',
                 'label'   => __( 'Enable PayIQ Sandbox/Test Mode.', 'payiq-wc-gateway' ),
                 'default' => 'yes'
             ),
-            */
+            'testmode_service_name'                 => array(
+                'title'   => __( 'Service Name Sandbox', 'payiq-wc-gateway' ),
+                'type'    => 'text',
+                'label'   => __( 'Service Name Sandbox.', 'payiq-wc-gateway' ),
+                'default' => ''
+            ),
+            'testmode_shared_secret'                 => array(
+                'title'   => __( 'Shared Secret Sandbox', 'payiq-wc-gateway' ),
+                'type'    => 'text',
+                'label'   => __( 'Shared Secret Sandbox.', 'payiq-wc-gateway' ),
+                'default' => ''
+            ),
 			'debug'                    => [
 				'title'   => __( 'Debug', 'payiq-wc-gateway' ),
 				'type'    => 'checkbox',
@@ -275,7 +290,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$this->set_default_order_meta( $order );
 
 
-		if ( ! empty( $redirect_url ) && strpos( 'secure.payiq.se', $redirect_url ) !== false ) {
+		if ( ! empty( $redirect_url ) && strpos( 'test.payiq.se', $redirect_url ) !== false ) {
 
 			return [
 				'result' => 'fail',

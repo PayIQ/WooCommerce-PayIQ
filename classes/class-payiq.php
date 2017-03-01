@@ -279,6 +279,35 @@ class PayIQ {
 		return $options;
 	}
 
+	static function get_api_creditials( $key = null ){
+
+		$api_credentials = [];
+
+
+		if( self::get_gateway_options( 'testmode' ) === 'yes' ) {
+			$api_credentials = array(
+				'service_url' 	=> 'https://test.payiq.se/api/v2/soap/PaymentService',
+				'vsdl_url' 		=>'https://test.payiq.se/api/v2/soap/PaymentService?wsdl',
+				'service_name'	=>  self::get_gateway_options('testmode_service_name'),
+				'shared_secret' =>  self::get_gateway_options('testmode_shared_secret'),
+			);
+		} else {
+
+			$api_credentials = array(
+				'service_url' 	=> 'https://secure.payiq.se/api/v2/soap/PaymentService',
+				'vsdl_url' 		=> 'https://secure.payiq.se/api/v2/soap/PaymentService?wsdl',
+				'service_name'	=>  self::get_gateway_options('service_name'),
+				'shared_secret' =>  self::get_gateway_options('shared_secret'),
+			);
+		}
+
+		if(isset($key, $api_credentials[$key]) ){
+			return $api_credentials[$key];
+		}
+
+		return $api_credentials;
+	}
+
 	static function get_view( $view ) {
 
 		$view_path = WC_PAYIQ_PLUGIN_DIR . 'views/' . $view . '.php';

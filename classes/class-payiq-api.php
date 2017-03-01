@@ -3,10 +3,10 @@
 
 class PayIQAPI
 {
-	static $service_url = 'https://secure.payiq.se/api/v2/soap/PaymentService';
-	static $vsdl_url = 'https://secure.payiq.se/api/v2/soap/PaymentService?wsdl';
 
-	protected $service_name = null; //Your registered PayIQ service name.
+    protected $service_url = null;
+    protected $vsdl_url = null;
+    protected $service_name = null; //Your registered PayIQ service name.
 	protected $shared_secret = null; //Your registered PayIQ service name.
 	protected $order = null;
 	protected $client = null; //Your registered PayIQ service name.
@@ -19,8 +19,9 @@ class PayIQAPI
 
 	function __construct( $service_name, $shared_secret, $order = null, $debug = false ) {
 
-		$this->service_name = $service_name;
-		$this->shared_secret = $shared_secret;
+        $this->vsdl_url = PayIQ::get_api_creditials('vsdl_url');
+		$this->service_name = PayIQ::get_api_creditials('service_name');
+		$this->shared_secret = PayIQ::get_api_creditials('shared_secret');
 		$this->order = $order;
 
 		$this->setDebug( $debug );
@@ -28,11 +29,11 @@ class PayIQAPI
 		$this->logger = new WC_Logger();
 
 		$this->client = new PayIQSoapClient(
-			self::$vsdl_url, //null,
+            $this->vsdl_url, //null,
 			[
 				//'soap_version'  => 'SOAP_1_2',
 				//'location' => get_service_url( $endpoint ),
-				'uri'           => self::$vsdl_url,
+				'uri'           => $this->vsdl_url,
 				'trace'         => 1,
 				'exceptions'    => 1,
 				'use'           => SOAP_LITERAL,
@@ -51,11 +52,11 @@ class PayIQAPI
 		);
 
 		$this->myclient = new SoapClient(
-			self::$vsdl_url, //null,
+            $this->vsdl_url, //null,
 			[
 				//'soap_version'  => 'SOAP_1_2',
 				//'location' => get_service_url( $endpoint ),
-				'uri' => self::$vsdl_url,
+				'uri' => $this->vsdl_url,
 				'trace' => 1,
 				'exceptions' => 0,
 				'use' => SOAP_LITERAL,
@@ -163,6 +164,7 @@ class PayIQAPI
 				//ServiceName, Amount, CurrencyCode, OrderReference, Timestamp, SharedSecret
 				$raw_sting = $this->service_name . ($this->get_order_totals_decimals()) . $this->order->get_order_currency() . $this->get_order_ref() . $this->get_timestamp();
 
+
 				break;
 		}
 
@@ -212,7 +214,7 @@ class PayIQAPI
 
 	function get_service_url( $endpoint ) {
 
-		return self::$service_url . '/' . $endpoint;
+        return PayIQ::get_api_credentials('service_url') . '/' . $endpoint;
 	}
 
 	/*
@@ -498,6 +500,7 @@ class PayIQAPI
 
 		$response = $this->client->__myDoRequest( $xml, 'PrepareSession' );
 
+
 		$dom = new DOMDocument();
 		$dom->loadXML( $response );
 		$ns = 'http://schemas.wiredge.se/payment/api/v2/objects';
@@ -505,6 +508,7 @@ class PayIQAPI
 		$data = $this->get_xml_fields( $response, [
 			'RedirectUrl'
 		], $ns);
+
 
 		$redirect_url = $data['RedirectUrl'];
 

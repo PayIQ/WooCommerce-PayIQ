@@ -3,7 +3,7 @@ Contributors: pekz0r, payiq, angrycreative, kylegard
 Tags: PayIQ, WooCommerce, Gateway, Payments, WooCommmerce Gateway, PSP
 Requires at least: 4.0
 Tested up to: 4.6.1
-Stable tag: 1.1.4
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,7 +33,11 @@ No. All the card information is handled in a hosted payment window and will not 
 1. Settings in WP Admin
 2. Payment selector in checkout
 
+
 == Changelog ==
+= 1.2 =
+* Test mode available.
+
 = 1.1.4 =
 * Swedish translation available.
 

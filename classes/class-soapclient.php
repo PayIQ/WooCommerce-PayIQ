@@ -19,7 +19,7 @@ class PayIQSoapClient extends SoapClient {
 		//$location = 'http://xxxxx:xxxx/TransactionServices/TransactionServices6.asmx';
 		//$action = 'http://www.micros.com/pos/les/TransactionServices/'.$op;
 
-		$location = 'https://secure.payiq.se/api/v2/soap/PaymentService';
+		$location = PayIQ::get_api_creditials('service_url');
 		$action = 'http://schemas.wiredge.se/payment/api/v2/IPaymentService/'.$op;
 		$version = '1';
 

@@ -290,7 +290,7 @@ class WC_Gateway_PayIQ extends WC_Payment_Gateway {
 		$this->set_default_order_meta( $order );
 
 
-		if ( ! empty( $redirect_url ) && strpos( 'test.payiq.se', $redirect_url ) !== false ) {
+		if ( ! empty( $redirect_url ) && strpos( '.payiq.se', $redirect_url ) !== false ) {
 
 			return [
 				'result' => 'fail',
